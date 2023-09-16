@@ -1,0 +1,13 @@
+App\Form\Model\ClubesDto:
+    properties:
+        nombre:
+            - NotBlank: 
+                message: 'El nombre del club no debe estar en blanco'
+            - Length:
+                min: 5
+                max: 50
+                minMessage: 'El nombre del club debe tener al menos {{ limit }} characters de longitud'
+                maxMessage: 'El nombre del club no puede tener más {{ limit }} characters'  
+        email:
+            - Email:
+                message: El email "{{ value }}" no es un email valido.                          

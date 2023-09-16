@@ -1,0 +1,12 @@
+App\Entity\Convocatoria:
+    attributes:
+        id:
+            groups: ['convocatoria','convocatoriajugador' , 'equipos', 'eventos']    
+        evento:
+            groups: ['convocatoria','convocatoriajugador']
+        asistencia:
+            groups: ['convocatoria','convocatoriajugador', 'equipos', 'eventos']
+        comentario:
+            groups: ['convocatoria','convocatoriajugador', 'equipos', 'eventos']
+        jugador:
+            groups: ['convocatoria',  'equipos', 'eventos']

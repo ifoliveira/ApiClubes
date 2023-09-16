@@ -1,0 +1,21 @@
+App\Entity\Eventos:
+    attributes:
+        id:
+            groups: ['eventos', 'equipos'] 
+        fecha:
+            groups: ['eventos', 'equipos', 'convocatoria', 'convocatoriajugador']
+        horaIni:
+            groups: ['eventos', 'equipos', 'convocatoria', 'convocatoriajugador']
+        horaFin:
+            groups: ['eventos', 'equipos', 'convocatoria', 'convocatoriajugador']
+        lugar:
+            groups: ['eventos', 'equipos', 'convocatoria', 'convocatoriajugador']
+        tipo:
+            groups: ['eventos', 'equipos', 'convocatoria', 'convocatoriajugador']
+        equipo:
+            groups: ['eventos']
+        convocatorias:
+            groups: ['equipos', 'eventos']
+
+      
+

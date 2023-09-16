@@ -1,0 +1,14 @@
+App\Entity\Divisiones:
+    attributes:
+        id:
+            groups: ['divisiones','clubes', 'equipos']
+        temporada:
+            groups: ['divisiones','clubes', 'equipos']
+        categoria:
+            groups: ['divisiones','clubes', 'equipos']
+        division:
+            groups: ['divisiones','clubes', 'equipos']         
+        grupo:
+            groups: ['divisiones','equipos']              
+        equipos:
+            groups: ['divisiones']              

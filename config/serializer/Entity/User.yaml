@@ -1,0 +1,9 @@
+App\Entity\User:
+    attributes:
+        id:
+            serialized_name: _id
+            groups: ['message']
+
+        username:
+            serialized_name: name
+            groups: ['message']

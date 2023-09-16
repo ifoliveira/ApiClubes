@@ -1,0 +1,20 @@
+App\Entity\Clubes:
+    attributes:
+        id:
+            groups: ['clubes']    
+        nombre:
+            groups: ['clubes','equipos']
+        escudo:
+            groups: ['clubes']
+        equipos:
+            groups: ['clubes']
+        direccion:
+            groups: ['clubes']            
+        web:
+            groups: ['clubes'] 
+        email:
+            groups: ['clubes'] 
+        telefono:
+            groups: ['clubes'] 
+        codigoAstfut:
+            groups: ['clubes']                         

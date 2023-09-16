@@ -1,0 +1,24 @@
+App\Entity\Equipo:
+    attributes:
+        nombre:
+            groups: ['clubes', 'equipos','divisiones', 'jugador','staff', 'eventos', 'equiposUni'] 
+        id:
+            groups: ['clubes', 'equipos', 'equiposUni'] 
+        codigoAstfut:
+            groups: ['clubes', 'equipos', 'equiposUni']
+        categoria:
+            groups: ['clubes', 'equipos', 'jugador', 'staff', 'equiposUni']
+        club:
+            groups: ['equipos', 'equiposUni']
+        eventos:
+            groups: ['equipos']
+        division:
+            groups: ['clubes', 'equipos', 'jugador','staff', 'equiposUni']         
+        jugadores:
+            groups: ['equipos', 'eventos']  
+        message:
+            groups: ['message'] 
+
+      
+
+

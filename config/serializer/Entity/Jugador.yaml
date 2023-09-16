@@ -1,0 +1,14 @@
+App\Entity\Jugador:
+    attributes:
+        id:
+            groups: ['jugador', 'equipos', 'eventos']    
+        nombre:
+            groups: ['jugador', 'convocatoria', 'equipos', 'eventos']
+        apellidos:
+            groups: ['jugador', 'convocatoria', 'equipos', 'eventos']            
+        foto:
+            groups: ['jugador', 'equipos']
+        equipo:
+            groups: ['jugador']
+        tipo:
+            groups: ['jugador', 'convocatoria', 'equipos', 'eventos']

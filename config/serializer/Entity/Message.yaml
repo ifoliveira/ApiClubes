@@ -1,0 +1,11 @@
+App\Entity\Message:
+    attributes:
+        id: 
+            serialized_name: _id
+            groups: ['message']    
+        text:
+            groups: ['message']
+        createdAt:
+            groups: ['message']
+        user:
+            groups: ['message']

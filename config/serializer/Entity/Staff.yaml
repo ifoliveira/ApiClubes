@@ -1,0 +1,12 @@
+App\Entity\Staff:
+    attributes:
+        id:
+            groups: ['staff']
+        nombre:
+            groups: ['staff']
+        apellidos:
+            groups: ['staff']
+        equipo:
+            groups: ['staff']            
+        club:
+            groups: ['staff']            
