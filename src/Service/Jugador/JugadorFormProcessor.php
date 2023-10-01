@@ -43,20 +43,25 @@ class   JugadorFormProcessor
         $equipo = null;  
 
         $clubId= $request->query->get('club');
+
+        if ($clubId !== null) {
+            $club = ($this->getClub)($clubId);
+        }  
+
+        $equipoId= $request->query->get('equipo');
+
+        if ($equipoId !== null) {
+            $equipo = ($this->getEquipo)($equipoId);
+        }          
         
         if ($jugadorId === null) {
             $jugadorDto = JugadorDto::createEmpty();
         } else {
-           
             $jugador = ($this->getJugador)($jugadorId);
             $jugadorDto = JugadorDto::createFromJugador($jugador);
-            
         }
         
-        if ($clubId !== null) {
-            $club = ($this->getClub)($clubId);
-            $jugadorDto->club[] = ClubesDto::createFromClubes($club);
-        }        
+      
 
         $content = json_decode($request->getContent(), true);
 
@@ -70,13 +75,6 @@ class   JugadorFormProcessor
         if (!$form->isValid()) {
             return [null, $form];
         }
-
-        
-
-        $equipo = null;
-        if (!empty($jugadorDto->equipo)) {
-            $equipo = ($this->getEquipo)($jugadorDto->equipo->id);
-        }        
         
         $filename = null;
         if ($jugadorDto->foto) {

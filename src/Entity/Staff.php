@@ -21,6 +21,9 @@ class Staff
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $fechaModi = null;
 
+    #[ORM\OneToMany(mappedBy: 'entrenadorId', targetEntity: User::class)]
+    private Collection $users;
+
     public function __construct(
         #[ORM\Id]
         #[ORM\Column(type: UuidType::NAME, unique: true)]
@@ -47,7 +50,8 @@ class Staff
 
    
        $datatime = new DateTimeImmutable("now" , new \DateTimeZone('Europe/Madrid'));
-       $this->fechaAlta = $datatime; 
+       $this->fechaAlta = $datatime;
+       $this->users = new ArrayCollection(); 
 
    }
    
@@ -221,6 +225,36 @@ class Staff
     public function setFechaModi(?\DateTimeInterface $fechaModi): static
     {
         $this->fechaModi = $fechaModi;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->setEntrenador($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getEntrenador() === $this) {
+                $user->setEntrenador(null);
+            }
+        }
 
         return $this;
     }

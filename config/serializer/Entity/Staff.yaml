@@ -10,3 +10,5 @@ App\Entity\Staff:
             groups: ['staff']            
         club:
             groups: ['staff']            
+        foto:
+            groups: ['staff']            

@@ -11,6 +11,7 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
+
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
@@ -21,6 +22,7 @@ services:
             - '../src/Kernel.php'
             - '../src/Form/Model'
 
+   
 
     acme_api.event.jwt_created_listener:
         class: App\EventListener\JWTCreatedListener\JWTCreatedListener

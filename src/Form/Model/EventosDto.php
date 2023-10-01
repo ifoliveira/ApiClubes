@@ -48,20 +48,35 @@ class EventosDto
 
     public function obtenerFechas(): array
     {
+        $diasemana = 0;
         $fechas = [];
+
         $nuevaFecha = strtotime($this->fechaIni);
 
-            
-        do {
-      
-            if ($this->semana[intval(date("w", strtotime($this->fechaIni)))] == 1) {
-                $fechas[] = $this->fechaIni;
-            }
-            $nuevaFecha = strtotime($this->fechaIni. "+ 1 days");
+        print_r($this->semana);
 
-            $this->fechaIni =  date('Y-m-d', $nuevaFecha);
+        if ($this->fechaIni != $this->fechaFin) {
 
-        } while ($nuevaFecha <= strtotime($this->fechaFin));
+
+            do {
+
+                $diasemana = intval(date("w", strtotime($this->fechaIni))) - 1 ;
+                $diasemana  = $diasemana < 0 ? $diasemana = 6 : $diasemana;                
+        
+                if ($this->semana[$diasemana] == 1) {
+                    $fechas[] = $this->fechaIni;
+                }
+                $nuevaFecha = strtotime($this->fechaIni. "+ 1 days");
+
+                $this->fechaIni =  date('Y-m-d', $nuevaFecha);
+
+            } while ($nuevaFecha <= strtotime($this->fechaFin));
+
+        } else {
+
+            $fechas[] = $this->fechaIni;
+
+        }
 
         return $fechas;
     }

@@ -75,8 +75,6 @@ class Equipo
     public static function create(UuidInterface $Uuid, string $nombre, string $categoria, string $codigoAstfut): self 
     
     {
-      
-          
         return new self($Uuid, $nombre, $categoria, $codigoAstfut);
 
     }   

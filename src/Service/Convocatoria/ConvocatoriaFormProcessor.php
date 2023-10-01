@@ -9,14 +9,7 @@ use App\Repository\ConvocatoriaRepository;
 use App\Service\Convocatoria\CreateConvocatoria;
 use App\Service\Eventos\GetEvento;
 use App\Service\Jugador\GetJugador;
-use DateTime;
-use Symfony\Component\Form\Extension\Core\DataTransformer\UuidToStringTransformer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Form\FormFactoryInterface;
-use Ramsey\Uuid\Uuid;
 
 class ConvocatoriaFormProcessor
  {
@@ -65,7 +58,6 @@ class ConvocatoriaFormProcessor
         if (!$form->isValid()) {
             return [null, $form];
         }
-
 
         if ($convocatoriaDto->getEvento() === null) {
             return [null, "El evento debe estar informao"];
@@ -122,12 +114,10 @@ class ConvocatoriaFormProcessor
                     $jugador = ($this->getJugador)($NuevoJugador->getId());
                     
                     $convocatoria = ($this->createConvocatoria)
-                                        ($evento, 
-                                        $jugador
-                                        );
+                                        ($evento,$jugador);
                                         
-                        $this->ConvocatoriaRepository->save($convocatoria,true);
-                        $Convocatoria[]=$convocatoria;
+                    $this->ConvocatoriaRepository->save($convocatoria,true);
+                          $Convocatoria[]=$convocatoria;
                         
                 }
 

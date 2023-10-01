@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Repository\StaffRepository;
+use App\Service\Staff\GetStaff;
 use App\Service\Staff\StaffFormProcessor;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -24,6 +25,20 @@ class StaffController extends AbstractFOSRestController
         return $staffRepository->findAll();
 
     }
+
+    #[Get(path: "/staff/{id}")]
+    #[ViewAttribute(serializerGroups: ['staff'], serializerEnableMaxDepthChecks: true)]  
+    public function getSingleAction(String $id , GetStaff $getStaff){
+        try {
+            $entrenador = ($getStaff)($id);
+        } catch (Exception) {
+            return View::create('Entrenador  no encontrado', Response::HTTP_BAD_REQUEST);
+        }
+        return $entrenador;
+
+    }    
+
+  
 
     #[Post(path: "/staff")]
     #[ViewAttribute(serializerGroups: ['staff'], serializerEnableMaxDepthChecks: true)]    

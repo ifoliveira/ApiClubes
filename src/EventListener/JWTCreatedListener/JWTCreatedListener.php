@@ -50,6 +50,21 @@ class JWTCreatedListener
                 $payload['equipo'] = $event->getUser()->getJugador()->getEquipo()->getId();
             };
         }
+
+        if  (!empty($event->getUser()->getEntrenador())) {
+
+            if ($event->getUser()->getEntrenador()) {
+            $payload['entrenador'] = $event->getUser()->getEntrenador()->getId();
+            };
+
+            if ($event->getUser()->getEntrenador()->getClub()){
+            $payload['club'] = $event->getUser()->getEntrenador()->getClub()->getId(); 
+            };
+
+            if ($event->getUser()->getEntrenador()->getEquipo()){
+                $payload['equipo'] = $event->getUser()->getEntrenador()->getEquipo()[0]->getId();
+            };
+        }
         $event->setData($payload);
 
     }

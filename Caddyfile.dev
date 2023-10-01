@@ -1,0 +1,13 @@
+# The address of your server
+localhost
+
+route {
+    mercure {
+        # Publisher JWT key
+        publisher_jwt !ChangeThisMercureHubJWTSecretKey!
+        # Subscriber JWT key
+        subscriber_jwt !ChangeThisMercureHubJWTSecretKey!
+    }
+
+    respond "Not Found" 404
+}

@@ -18,13 +18,6 @@ class JugadorFormType extends AbstractType
             ->add('id', TextType::class)
             ->add('nombre', TextType::class)
             ->add('foto', TextType::class)
-            ->add('equipo', EquipoFormType::class)
-            ->add('club', CollectionType::class,  [
-                    'entry_type' => ClubesFormType::class,
-                    'allow_add' => true,
-                    'allow_delete' => true,
-                    ])
-    
         ;
     }
 

@@ -10,10 +10,12 @@ class EquiposDto
     public ?string $nombre = null;
     public ?string $urlnom = null;
     public ?string $categoria = null;
+    public ?array $jugadores = [];    
+
 
     public function __construct()
     {
-
+        $this->jugadores = [];
     }    
   
     public static function fromArray($array)
@@ -66,6 +68,16 @@ class EquiposDto
     {
         return ['nombre' => $this->nombre, 'urlnom' => $this->urlnom, 'categoria' => $this->categoria];
     }
+   
+    public function getJugadores(): ?array 
+    { 
+        return $this->jugadores; 
+    }
 
-     
+    public function setJugadores(?array $Jugadores): self 
+    { 
+        $this->jugadores = $Jugadores; 
+        
+        return $this; 
+    }
 }

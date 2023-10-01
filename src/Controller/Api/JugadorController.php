@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Repository\JugadorRepository;
 use App\Service\Jugador\JugadorFormProcessor;
 use App\Service\Jugador\GetJugador;
+use App\Service\Jugador\JugadoresFormProcessor;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations\{Delete, Get, Post, Put, Patch};
@@ -60,6 +61,18 @@ class JugadorController extends AbstractFOSRestController
         return $jugador ?? $error ;
 
     }  
+
+
+    #[Post(path: "/jugadorMasivo")]
+    #[ViewAttribute(serializerGroups: ['jugador'], serializerEnableMaxDepthChecks: true)]    
+    public function postMultiple(Request $request, JugadoresFormProcessor $JugadoresFormProcessor){
+
+        [$jugador, $error]= ($JugadoresFormProcessor)($request);
+
+        return $jugador ?? $error ;
+
+    }  
+
 
 
     #[Put(path: "/jugador/{id}")]

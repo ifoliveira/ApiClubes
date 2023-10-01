@@ -39,12 +39,12 @@ function Convocados( {navigation, route} ) {
 
            const headers = { 'Authorization': `${API_TOKEN}${token}` };
            const response = await fetch(`${BACKEND_URL}api/equipo/${equipo}`, { headers });
-           console.log(response.status);
+           (response.status);
  
            switch(response.status) {
              case 200:
                const json = await response.json();
-               console.log(json)
+               (json)
                setData(JSON.parse(JSON.stringify(json)));
                break;
              case 401:

@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 use App\Entity\Jugador;
+use App\Entity\Staff;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -34,6 +35,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    private ?staff $entrenador = null;
 
     public function getId(): ?int
     {
@@ -134,6 +138,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(?string $email): static
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getEntrenador(): ?staff
+    {
+        return $this->entrenador;
+    }
+
+    public function setEntrenador(?staff $entrenador): static
+    {
+        $this->entrenador = $entrenador;
 
         return $this;
     }

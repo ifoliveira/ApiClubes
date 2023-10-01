@@ -21,6 +21,10 @@ framework:
         enabled: true
         mapping:
             paths: ['%kernel.project_dir%/config/serializer/'] 
+
+    http_client:
+        default_options:
+            verify_peer: false            
 when@test:
    framework:
        test: true

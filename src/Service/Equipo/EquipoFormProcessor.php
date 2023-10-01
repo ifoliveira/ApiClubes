@@ -64,10 +64,12 @@ class EquipoFormProcessor
             
             $categoria = $this->categoriadecode->decode($NewEquipoDto->categoria);
             
-            $equip = ($this->createEquipo)(Uuid::uuid4(), $NewEquipoDto->nombre, $categoria, $parameters['codequipo']);
+            $equip = ($this->createEquipo)(Uuid::uuid4(), $NewEquipoDto->nombre, $categoria, $parameters['Codigo_Equipo']);
             $equips[] = $equip;
 
-        }
+            } 
+
+        
 
         $club->update(
             $clubDto->nombre,
@@ -81,6 +83,8 @@ class EquipoFormProcessor
         );
 
         $this->ClubesRepository->save($club,true);
+
+       
         return [$club, null];            
         }
 

@@ -11,8 +11,6 @@ class JugadorDto
     public ?string $id = null;
     public ?string $nombre = null;
     public ?string $foto = null;
-    public ?EquipoDto $equipo = null;    
-    public ?array $club = null;    
     
     public function __construct()
     {
@@ -48,5 +46,13 @@ class JugadorDto
 
     public function getId(): ?string { return $this->id; }
     public function setId(?string $id): self { $this->id = $id; return $this; }    
+
+
+    public function getNombre(): ?string { return $this->nombre; }
+    public function setNombre(?string $nombre): self { $this->nombre = $nombre; return $this; }
+
+    public function getFoto(): ?string { return $this->foto; }
+    public function setFoto(?string $foto): self { $this->foto = $foto; return $this; }
+
 
 }
