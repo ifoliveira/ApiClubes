@@ -66,12 +66,10 @@ class ConvocatoriaController extends AbstractFOSRestController
     #[Put(path: "/convocatoria/{id}")]
     #[ViewAttribute(serializerGroups: ['convocatoria'], serializerEnableMaxDepthChecks: true)]    
     public function putAction(Request $request, String $id, ConvocatoriaFormProcessor $ConvocatoriaFormProcessor,  PostNotifications $postNotifications){
-        $diassemana = array("Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sábado");
-        $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 
         [$Convocatoria, $error]= ($ConvocatoriaFormProcessor)($request, $id);
 
-        [$status, $contenido] = $postNotifications->confirmacion_asistencia($Convocatoria->getEvento()->getEquipo()->getId(), $Convocatoria->getJugador()->getNombre(),$diassemana[date_format($Convocatoria->getEvento()->getFecha(), 'w')] . " " . date_format($Convocatoria->getEvento()->getFecha(), 'd') . " de " . $meses[date_format($Convocatoria->getEvento()->getFecha(), 'n') - 1],$Convocatoria->getEvento()->getTipo() . " " .  $Convocatoria->getEvento()->getEquipo()->getNombre() . " " .$Convocatoria->getEvento()->getEquipo()->getCategoria());
+        [$status, $contenido] = $postNotifications->confirmacion_asistencia($Convocatoria);
 
         return $Convocatoria ?? $error ;
 

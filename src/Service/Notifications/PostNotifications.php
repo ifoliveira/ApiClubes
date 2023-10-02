@@ -2,6 +2,7 @@
 
 namespace App\Service\Notifications;
 
+use App\Entity\Convocatoria;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PostNotifications
@@ -53,19 +54,29 @@ class PostNotifications
         return ([$statusCode, $content]);
     }
 
-    public function confirmacion_asistencia(string $idequipo, string $jugador, string $fecha, string $momequipo): array 
+    public function confirmacion_asistencia(Convocatoria $Convocatoria): array 
 
-    {   
-        print_r ('entrenador'.$idequipo .'');
-       
-        //$client= $this->httpClient->create();
+    {             
+        $nomequipo= $Convocatoria->getEvento()->getTipo() . " " .  $Convocatoria->getEvento()->getEquipo()->getNombre() . " " .$Convocatoria->getEvento()->getEquipo()->getCategoria();
+        $jugador = $Convocatoria->getJugador()->getNombre() . " " . $Convocatoria->getJugador()->getApellidos() ;
+
+        if ($Convocatoria->getAsistencia() == 1) {
+            $texto = "ha aceptado la convocatoria";
+
+        } elseif ($Convocatoria->getAsistencia() == 2) {
+            $texto = "no acudirá '" . $Convocatoria->getComentario() . "'";
+
+        } elseif ($Convocatoria->getAsistencia() == 3) {
+            $texto = "es dudoso en la convocatoria";
+
+        }
 
         $jsonData = [
-            'to' => '/topics/entrenador'.$idequipo .'',
+            'to' => '/topics/entrenador' . $Convocatoria->getEvento()->getEquipo()->getId() .'',
             'notification' => [
-                'title' => '' . $momequipo . '',
+                'title' => 'Convocatoria al' . $nomequipo . '',
                 //'body' => 'Convocatoria en la siguiente fecha ' . date_format($Convocatoria[0]->getEvento()->getFecha(), 'D M j'),
-                'body' => $jugador . 'Aceptado convocatoria',
+                'body' => $jugador . ', ' . $texto
             ],
         ];
 
