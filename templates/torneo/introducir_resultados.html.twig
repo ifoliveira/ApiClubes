@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Administracion</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #1e2a38;
+            color: #fff;
+            padding: 2rem 1rem;
+        }
+
+        h2, h3 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            background: #2e3d4f;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        th {
+            background: #4CAF50;
+        }
+
+        tr:nth-child(even) {
+            background-color: #3a4b5c;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #2e3d4f;
+        }
+
+        tr.destacado {
+            background-color: #f9d923;
+            color: #000;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            th, td {
+                padding: 0.5rem;
+                font-size: 0.95rem;
+            }
+        }
+
+        button {
+            display: block;
+            margin: 1.5rem auto 0;
+            padding: 0.75rem 2rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+    </style>
+</head>
+<body>
+
+
+<form method="post" action="{{ path('guardar_resultados', { slug: torneo.slug }) }}">
+  <table style="width: 100%; border-collapse: collapse;">
+    {% for partido in partidos %}
+      <tr>
+        <td style="width: 25%; padding: 5px;">{{ partido.local.nombre }}</td>
+        <td style="width: 10%; padding: 5px;">
+          <input type="number" step="1" name="resultados[{{ partido.id }}][local]" value="{{ partido.golesLocal }}" style="width: 100%; text-align: center;" />
+        </td>
+        <td style="width: 5%; text-align: center;">-</td>
+        <td style="width: 10%; padding: 5px;">
+          <input type="number" step="1" name="resultados[{{ partido.id }}][visitante]" value="{{ partido.golesVisitante }}" style="width: 100%; text-align: center;" />
+        </td>
+        <td style="width: 25%; padding: 5px;">{{ partido.visitante.nombre }}</td>
+        <td style="width: 25%; padding: 5px;">
+          {% if partido.estado != 'finalizado' %}
+            <button type="submit" name="acciones[{{ partido.id }}]" value="iniciar">Iniciar</button>
+            <button type="submit" name="acciones[{{ partido.id }}]" value="finalizar">Finalizar</button>
+          {% else %}
+            <span style="font-weight: bold;">Finalizado</span>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+  <button type="submit" style="margin-top: 1rem;">Guardar Resultados</button>
+</form>
+
+

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Clasificación {{ grupo.nombre }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #1e2a38;
+            color: #fff;
+            padding: 2rem 1rem;
+        }
+
+        h2, h3 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            background: #2e3d4f;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        th {
+            background: #4CAF50;
+        }
+
+        tr:nth-child(even) {
+            background-color: #3a4b5c;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #2e3d4f;
+        }
+
+        tr.destacado {
+            background-color: #f9d923;
+            color: #000;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            th, td {
+                padding: 0.5rem;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Clasificación - {{ grupo.nombre }}</h2>
+<h2>Equipo seleccionado - {{ equipoSeleccionado.nombre }}</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Equipo</th>
+            <th>PJ</th>
+            <th>Pts</th>
+            <th>GF</th>
+            <th>GC</th>
+            <th>DG</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for fila in clasificacion %}
+            <tr class="{{ fila.equipo.nombre == equipoSeleccionado.nombre ? 'destacado' : '' }}">
+            <td>{{ fila.equipo.nombre }}</td>
+            <td>{{ fila.pj }}</td>
+            <td>{{ fila.puntos }}</td>
+            <td>{{ fila.gf }}</td>
+            <td>{{ fila.gc }}</td>
+            <td>{{ fila.dg }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+<h2>Partidos del grupo</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Local</th>
+            <th>Resultado</th>
+            <th>Visitante</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for partido in partidos %}
+            <tr class="{{ (partido.local.nombre == equipoSeleccionado.nombre or partido.visitante.nombre == equipoSeleccionado.nombre) ? 'destacado' : '' }}">
+
+                <td>{{ partido.fecha ? partido.fecha|date('d/m H:i') : 'Sin fecha' }}</td>
+
+                <td>{{ partido.local.nombre }}</td>
+                <td>
+                    {% if partido.golesLocal is not null and partido.golesVisitante is not null %}
+                        {% if partido.estado == 'En Juego' %}
+                            {{ partido.golesLocal }} - {{ partido.golesVisitante }} <em>({{partido.estado }})</em>
+                        {% elseif partido.estado == 'Finalizado' %}
+                            {{ partido.golesLocal }} - {{ partido.golesVisitante }} <em>(Final)</em>
+                        {% else %}
+                            {{ partido.fecha ? partido.fecha|date('H:i') : 'Sin hora' }}
+                        {% endif %}
+                    {% else %}
+                        vs
+                    {% endif %}
+                </td>
+                <td>{{ partido.visitante.nombre }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>    
+
+</body>
+</html>
+

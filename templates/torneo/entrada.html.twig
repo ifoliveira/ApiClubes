@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Elige tu equipo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #141e30, #243b55);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .equipo {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .equipo:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #4CAF50;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+
+        @media (max-width: 500px) {
+            h1 { font-size: 1.5rem; }
+            .equipo { font-size: 1rem; padding: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <h1>{{torneo.nombre}}</h1>
+    <h2>Selecciona tu equipo</h2>
+
+    <div class="grid">
+        {% for equipo in equipos %}
+            <div class="equipo">
+                <a href="{{ path('clasificacion_grupo', { id: equipo.id }) }}">
+                    {{ equipo.nombre }}
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

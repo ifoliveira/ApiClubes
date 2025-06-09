@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cuadro Final del Torneo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: #1e1e2f;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 1.5rem;
+        }
+
+        .fase {
+            margin-bottom: 2rem;
+        }
+
+        .partido {
+            background: #2e3a59;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 0.5rem auto;
+            max-width: 400px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .partido strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            color: #f9d923;
+        }
+
+        .resultado {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        @media (max-width: 500px) {
+            .resultado {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Cuadro Final del Torneo</h2>
+
+    <div class="fase">
+        <h3>Semifinales</h3>
+        {% for p in semifinales %}
+            <div class="partido">
+                <strong>{{ p.partido }}</strong>
+                <div class="resultado">
+                    <span>{{ p.local }} ({{ p.goles_local }})</span>
+                    <span>{{ p.visitante }} ({{ p.goles_visitante }})</span>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="fase">
+        <h3>Final</h3>
+        <div class="partido">
+            <strong>{{ final.partido }}</strong>
+            <div class="resultado">
+                <span>{{ final.local }} ({{ final.goles_local }})</span>
+                <span>{{ final.visitante }} ({{ final.goles_visitante }})</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="fase">
+        <h3>3º y 4º Puesto</h3>
+        <div class="partido">
+            <strong>{{ tercerPuesto.partido }}</strong>
+            <div class="resultado">
+                <span>{{ tercerPuesto.local }} ({{ tercerPuesto.goles_local }})</span>
+                <span>{{ tercerPuesto.visitante }} ({{ tercerPuesto.goles_visitante }})</span>
+            </div>
+            {% if tercerPuesto.penaltis %}
+                <p><small>Penaltis: {{ tercerPuesto.penaltis }}</small></p>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>

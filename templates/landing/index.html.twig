@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Torneos Fútbol Online | Gestiona tu torneo en minutos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+            color: white;
+        }
+        header {
+            padding: 2rem;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 1rem auto;
+        }
+        .cta {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        .cta a {
+            background: #4CAF50;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+        .cta a:hover {
+            background: #45a049;
+        }
+        footer {
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>¿Organizas torneos de fútbol?</h1>
+        <p>Crea en minutos una web para tu torneo con clasificaciones, partidos y resultados en vivo. Sin complicaciones.</p>
+        <div class="cta">
+            <a href="mailto:torneos@{{ app.request.getHost()|replace({'www.': ''}) }}?subject=Quiero mi web de torneo">
+    Solicita tu demo gratuita
+</a>
+
+        </div>
+    </header>
+
+    <footer>
+        &copy; {{ "now"|date("Y") }} TorneosFútbol. Todos los derechos reservados.
+    </footer>
+</body>
+</html>

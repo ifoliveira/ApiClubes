@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Clasificación {{ grupo }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #1e2a38;
+            color: #fff;
+            padding: 2rem 1rem;
+        }
+
+        h2, h3 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            background: #2e3d4f;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        th {
+            background: #4CAF50;
+        }
+
+        tr:nth-child(even) {
+            background-color: #3a4b5c;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #2e3d4f;
+        }
+
+        tr.destacado {
+            background-color: #f9d923;
+            color: #000;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            th, td {
+                padding: 0.5rem;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Clasificación - {{ grupo }}</h2>
+    <h3>Equipo seleccionado: {{ equipoSeleccionado }}</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Equipo</th>
+                <th>Puntos</th>
+                <th>GF</th>
+                <th>GC</th>
+                <th>Desempate</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for equipo in clasificacion %}
+                <tr class="{{ equipo.nombre == equipoSeleccionado ? 'destacado' : '' }}">
+                    <td>{{ equipo.nombre }}</td>
+                    <td>{{ equipo.puntos }}</td>
+                    <td>{{ equipo.gf }}</td>
+                    <td>{{ equipo.gc }}</td>
+                    <td>{{ equipo.desempate }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

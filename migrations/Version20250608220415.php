@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20230623184012 extends AbstractMigration
+final class Version20250608220415 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,16 +20,14 @@ final class Version20230623184012 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE jugador ADD club_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE jugador ADD CONSTRAINT FK_527D6F1861190A32 FOREIGN KEY (club_id) REFERENCES clubes (id)');
-        $this->addSql('CREATE INDEX IDX_527D6F1861190A32 ON jugador (club_id)');
+        $this->addSql('ALTER TABLE torneos ADD slug VARCHAR(100) NOT NULL');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_4177FB73989D9B62 ON torneos (slug)');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE jugador DROP FOREIGN KEY FK_527D6F1861190A32');
-        $this->addSql('DROP INDEX IDX_527D6F1861190A32 ON jugador');
-        $this->addSql('ALTER TABLE jugador DROP club_id');
+        $this->addSql('DROP INDEX UNIQ_4177FB73989D9B62 ON torneos');
+        $this->addSql('ALTER TABLE torneos DROP slug');
     }
 }
