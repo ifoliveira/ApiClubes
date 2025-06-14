@@ -10,6 +10,10 @@ use App\Repository\EquipoGrupoRepository;
 use App\Repository\PartidoGrupoRepository;
 use App\Repository\TorneosRepository;   
 use App\Entity\Grupo;
+use App\Repository\GrupoRepository;
+use App\Repository\PartidoFinalRepository;
+use App\Entity\PartidoFinal;
+use Knp\Snappy\Pdf;
 
 
 class TorneoController extends AbstractController
@@ -29,121 +33,106 @@ class TorneoController extends AbstractController
 
         return $this->render('torneo/entrada.html.twig', [
             'torneo' => $torneo,
-            'equipos' => $equipos,
+            'equiposTorneo' => $equipos,
         ]);
     }
 
-    #[Route('/torneo/equipo/{id}/clasificacion', name: 'clasificacion_grupo')]
+    #[Route('/torneo/{slug}/grupo/{grupoId}/equipo/{equipoId}', name: 'clasificacion_grupo')]
     public function clasificacionGrupo(
-        int $id,
+        ?int $equipoId,
         EquipoGrupoRepository $equipoGrupoRepository,
         PartidoGrupoRepository $partidoRepo,
+        GrupoRepository $grupoRepository,
+        TorneosRepository $torneosRepository,
+        string $slug,
         Request $request
     ): Response {
-        $equipoGrupo = $equipoGrupoRepository->findOneBy(['equipo' => $id]);
+        $torneo = $torneosRepository->findOneBy(['slug' => $slug]);
+        $grupo = $grupoRepository->find($request->attributes->get('grupoId'));
     
-        if (!$equipoGrupo) {
-            throw $this->createNotFoundException('El equipo no pertenece a ningún grupo');
+        if (!$grupo) {
+            throw $this->createNotFoundException('Grupo no encontrado');
         }
     
-        $grupo = $equipoGrupo->getGrupo();
+        $equipoSeleccionado = null;
+    
+        if ($equipoId) {
+            $equipoGrupo = $equipoGrupoRepository->findOneBy(['equipo' => $equipoId, 'grupo' => $grupo]);
+    
+            if (!$equipoGrupo) {
+                throw $this->createNotFoundException('El equipo no pertenece a este grupo');
+            }
+    
+            $equipoSeleccionado = $equipoGrupo->getEquipo();
+        }
     
         $partidos = $partidoRepo->findBy(['grupo' => $grupo], ['fecha' => 'ASC']);
-
+    
         foreach ($partidos as $partido) {
             if ($partido->getEstado() === 'en_juego' && $partido->getFecha() !== null) {
                 $now = new \DateTime();
                 $inicio = $partido->getFecha();
                 $interval = $inicio->diff($now);
                 $minuto = ($interval->h * 60) + $interval->i;
-        
-                // si quieres puedes añadirlo como propiedad virtual
                 $partido->minutoEnJuego = $minuto;
             }
         }
-                
-        $equiposDelGrupo = $equipoGrupoRepository->findBy(['grupo' => $grupo]);
-
-        $clasificacion = $this->calcularClasificacion($grupo, $partidoRepo);
     
-        // Luego en Twig puedes calcular la tabla (o hacerlo aquí con lógica si prefieres)
+        $equiposDelGrupo = $equipoGrupoRepository->findBy(['grupo' => $grupo]);
+    
+        $clasificacion = $this->calcularClasificacion($grupo, $partidoRepo);
     
         return $this->render('torneo/clasificacion.html.twig', [
             'grupo' => $grupo,
             'equiposGrupo' => $equiposDelGrupo,
-            'equipoSeleccionado' => $equipoGrupo->getEquipo(),
+            'equipoSeleccionado' => $equipoSeleccionado,
             'clasificacion' => $clasificacion,
             'partidos' => $partidos,
+            'grupos' => $grupoRepository->findBy(['torneo' => $torneo]),
+            'torneo' => $torneo,
         ]);
-    }    
+    }
+    
 
 
-    #[Route('/torneo/resultados', name: 'torneo_resultados')]
-    public function resultados(Request $request): Response
+    #[Route('/torneo/{slug}/cuadro-final', name: 'torneo_cuadro_final')]
+    public function cuadroFinal(
+        string $slug,
+        TorneosRepository $torneosRepository,
+        GrupoRepository $grupoRepository,
+        PartidoFinalRepository $partidoFinalRepository,
+        Request $request
+    ): Response 
     {
-        $equipoSeleccionado = $request->query->get('equipo');
-    
-        // Aquí decides a qué grupo pertenece. Lo simulamos como Grupo A
-        $grupo = 'Grupo A';
-    
-        // Simulación de clasificación (ordenada por puntos)
-        $clasificacion = [
-            ['nombre' => 'Alevín A', 'puntos' => 9, 'gf' => 10, 'gc' => 2, 'desempate' => '+8'],
-            ['nombre' => 'Benjamín B', 'puntos' => 6, 'gf' => 7, 'gc' => 3, 'desempate' => '+4'],
-            ['nombre' => 'Alevín B', 'puntos' => 4, 'gf' => 5, 'gc' => 6, 'desempate' => '-1'],
-            ['nombre' => 'Benjamín A', 'puntos' => 3, 'gf' => 4, 'gc' => 7, 'desempate' => '-3'],
-            ['nombre' => 'Infantil A', 'puntos' => 1, 'gf' => 2, 'gc' => 10, 'desempate' => '-8'],
-        ];
-    
-        return $this->render('torneo/resultados.html.twig', [
-            'equipoSeleccionado' => $equipoSeleccionado,
-            'grupo' => $grupo,
-            'clasificacion' => $clasificacion,
-        ]);
-    }  
+        $torneo = $torneosRepository->findOneBy(['slug' => $slug]);
 
-    #[Route('/torneo/cuadro-final', name: 'torneo_cuadro_final')]
-    public function cuadroFinal(): Response
-    {
-        // Datos simulados (en práctica se sacan de clasificaciones)
-        $semifinales = [
-            [
-                'partido' => 'Semifinal 1',
-                'local' => 'Alevín A',
-                'visitante' => 'Benjamín B',
-                'goles_local' => 2,
-                'goles_visitante' => 1,
-            ],
-            [
-                'partido' => 'Semifinal 2',
-                'local' => 'Benjamín A',
-                'visitante' => 'Alevín B',
-                'goles_local' => 0,
-                'goles_visitante' => 3,
-            ],
-        ];
-    
-        $final = [
-            'partido' => 'Final',
-            'local' => 'Alevín A',
-            'visitante' => 'Alevín B',
-            'goles_local' => 1,
-            'goles_visitante' => 2,
-        ];
-    
-        $tercerPuesto = [
-            'partido' => '3º y 4º Puesto',
-            'local' => 'Benjamín B',
-            'visitante' => 'Benjamín A',
-            'goles_local' => 2,
-            'goles_visitante' => 2,
-            'penaltis' => '5-4',
-        ];
-    
+        if (!$torneo) {
+            throw $this->createNotFoundException('Torneo no encontrado');
+        }
+
+        $partidos = $partidoFinalRepository->findBy(
+            ['torneo' => $torneo],
+            ['fase' => 'ASC'] // opcional si quieres ordenado por fase
+        );
+        
+        // o agrupar por fase en PHP si lo prefieres
+        $agrupadosPorFase = [];
+
+        foreach ($partidos as $p) {
+            $fase = $p->getFase() ?? 'sin_fase';
+        
+            if (!array_key_exists($fase, $agrupadosPorFase)) {
+                $agrupadosPorFase[$fase] = [];
+            }
+        
+            $agrupadosPorFase[$fase][] = $p;
+        }
+        
+        
+
+        // Renderizar la vista del cuadro final
         return $this->render('torneo/cuadro_final.html.twig', [
-            'semifinales' => $semifinales,
-            'final' => $final,
-            'tercerPuesto' => $tercerPuesto,
+            'fases' => $agrupadosPorFase
         ]);
     }
 
@@ -209,6 +198,38 @@ class TorneoController extends AbstractController
         });
     
         return $tabla;
+    }
+    
+    #[Route('/torneo/{slug}/cuadro-final/pdf', name: 'torneo_cuadro_final_pdf')]
+    public function cuadroFinalPdf(
+        string $slug,
+        TorneosRepository $torneosRepository,
+        PartidoFinalRepository $partidoFinalRepository,
+        Pdf $knpSnappy
+    ): Response {
+        $torneo = $torneosRepository->findOneBy(['slug' => $slug]);
+        $partidos = $partidoFinalRepository->findBy(['torneo' => $torneo]);
+    
+        // Agrupar dinámicamente por fase
+        $fases = [];
+        foreach ($partidos as $p) {
+            $fase = $p->getFase() ?? 'sin_fase';
+            $fases[$fase][] = $p;
+        }
+    
+        $html = $this->renderView('torneo/cuadro_final_pdf.html.twig', [
+            'torneo' => $torneo,
+            'fases' => $fases,
+        ]);
+    
+        return new Response(
+            $knpSnappy->getOutputFromHtml($html),
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="cuadro_final_'.$slug.'.pdf"',
+            ]
+        );
     }
     
     

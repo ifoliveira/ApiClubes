@@ -41,11 +41,15 @@ class Torneos
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $codigoAcceso = null;
 
+    #[ORM\OneToMany(mappedBy: 'torneo', targetEntity: PartidoFinal::class)]
+    private Collection $partidoFinals;
+
     public function __construct()
     {
         $this->equipoTorneos = new ArrayCollection();
         $this->grupos = new ArrayCollection();
         $this->cruceFinals = new ArrayCollection();
+        $this->partidoFinals = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -199,6 +203,36 @@ class Torneos
     public function setCodigoAcceso(?string $codigoAcceso): static
     {
         $this->codigoAcceso = $codigoAcceso;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PartidoFinal>
+     */
+    public function getPartidoFinals(): Collection
+    {
+        return $this->partidoFinals;
+    }
+
+    public function addPartidoFinal(PartidoFinal $partidoFinal): static
+    {
+        if (!$this->partidoFinals->contains($partidoFinal)) {
+            $this->partidoFinals->add($partidoFinal);
+            $partidoFinal->setTorneo($this);
+        }
+
+        return $this;
+    }
+
+    public function removePartidoFinal(PartidoFinal $partidoFinal): static
+    {
+        if ($this->partidoFinals->removeElement($partidoFinal)) {
+            // set the owning side to null (unless already changed)
+            if ($partidoFinal->getTorneo() === $this) {
+                $partidoFinal->setTorneo(null);
+            }
+        }
 
         return $this;
     }

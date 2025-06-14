@@ -5,6 +5,7 @@
         use App\Entity\EquipoTorneo;
         use App\Entity\Grupo;
         use App\Entity\EquipoGrupo;
+        use App\Entity\PartidoFinal;
         use Doctrine\Bundle\FixturesBundle\Fixture;
         use Doctrine\Persistence\ObjectManager;
         
@@ -150,7 +151,29 @@
                 $pg->setGolesVisitante(null);
                 $manager->persist($pg);                                
 
-        
+                // Semifinal 1: A1 vs B2
+                $sf1 = new PartidoFinal();
+                $sf1->setTorneo($torneo);
+                $sf1->setAliasLocal('A1');
+                $sf1->setAliasVisitante('B2');
+                $sf1->setFase('semifinal');
+                $manager->persist($sf1);
+
+                // Semifinal 2: B1 vs A2
+                $sf2 = new PartidoFinal();
+                $sf2->setTorneo($torneo);
+                $sf2->setAliasLocal('B1');
+                $sf2->setAliasVisitante('A2');
+                $sf2->setFase('semifinal');
+                $manager->persist($sf2);
+
+                // Final: Ganador S1 vs Ganador S2
+                $final = new PartidoFinal();
+                $final->setTorneo($torneo);
+                $final->setAliasLocal('S1');
+                $final->setAliasVisitante('S2');
+                $final->setFase('final');
+                $manager->persist($final);        
                 $manager->flush();
             }
         }

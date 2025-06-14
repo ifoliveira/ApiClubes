@@ -38,6 +38,18 @@ class PartidoFinal
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $fecha = null;
 
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $aliasLocal = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $aliasVisitante = null;
+
+    #[ORM\ManyToOne(inversedBy: 'partidoFinals')]
+    private ?Torneos $torneo = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $fase = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -135,6 +147,54 @@ class PartidoFinal
     public function setFecha(?\DateTimeInterface $fecha): static
     {
         $this->fecha = $fecha;
+
+        return $this;
+    }
+
+    public function getAliasLocal(): ?string
+    {
+        return $this->aliasLocal;
+    }
+
+    public function setAliasLocal(?string $aliasLocal): static
+    {
+        $this->aliasLocal = $aliasLocal;
+
+        return $this;
+    }
+
+    public function getAliasVisitante(): ?string
+    {
+        return $this->aliasVisitante;
+    }
+
+    public function setAliasVisitante(?string $aliasVisitante): static
+    {
+        $this->aliasVisitante = $aliasVisitante;
+
+        return $this;
+    }
+
+    public function getTorneo(): ?Torneos
+    {
+        return $this->torneo;
+    }
+
+    public function setTorneo(?Torneos $torneo): static
+    {
+        $this->torneo = $torneo;
+
+        return $this;
+    }
+
+    public function getFase(): ?string
+    {
+        return $this->fase;
+    }
+
+    public function setFase(?string $fase): static
+    {
+        $this->fase = $fase;
 
         return $this;
     }

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cuadro Final - {{ torneo.nombre }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 1cm;
+            color: #000;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        .fase {
+            margin-bottom: 2em;
+        }
+
+        .partido {
+            margin: 0.5em 0;
+            padding: 0.5em;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .partido strong {
+            display: block;
+            font-size: 1.1em;
+            margin-bottom: 0.2em;
+        }
+
+        .resultado {
+            font-size: 0.95em;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+
+<h1>{{ torneo.nombre }}</h1>
+<h2>Cuadro Final</h2>
+
+{% for fase, partidos in fases %}
+    <div class="fase">
+        <h3>{{ fase|capitalize|replace({'_': ' '}) }}</h3>
+        {% for partido in partidos %}
+            <div class="partido">
+                <strong>
+                    {{ partido.local ? partido.local.nombre : partido.aliasLocal }}
+                    vs
+                    {{ partido.visitante ? partido.visitante.nombre : partido.aliasVisitante }}
+                </strong>
+                <div class="resultado">
+                    {% if partido.golesLocal is not null and partido.golesVisitante is not null %}
+                        Resultado: {{ partido.golesLocal }} - {{ partido.golesVisitante }}
+                        {% if partido.penalties %}
+                            <br/>Penaltis: {{ partido.penalties }}
+                        {% endif %}
+                    {% else %}
+                        Por disputar
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endfor %}
+
+</body>
+</html>

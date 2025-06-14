@@ -11,8 +11,9 @@ use App\Entity\Torneos;
 use App\Entity\PartidoGrupo;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use App\Service\Torneo\CuadroFinalService;
 /**
- * @Route("/admin")
+ * @Route("/")
  */
 
 class AdminController extends AbstractController
@@ -105,7 +106,10 @@ class AdminController extends AbstractController
         }    
 
         #[Route('/partido/{id}/accion', name: 'partido_accion_rapida', methods: ['POST'])]
-        public function accionRapida(Request $request, PartidoGrupoRepository $repo, EntityManagerInterface $em, int $id): Response
+        public function accionRapida(Request $request, PartidoGrupoRepository $repo, EntityManagerInterface $em, 
+        int $id,
+        cuadroFinalService $cuadroFinalService
+        ): Response
         {
             $partido = $repo->find($id);
             if (!$partido) {
@@ -119,6 +123,8 @@ class AdminController extends AbstractController
                     $partido->setEstado('En Juego');
                     if ($partido->getFecha() === null) {
                         $partido->setFecha(new \DateTime());
+                        $partido->setGolesLocal(0);
+                        $partido->setGolesVisitante(0);
                     }
                     break;
             
@@ -139,9 +145,17 @@ class AdminController extends AbstractController
                     $actualVisitante = $partido->getGolesVisitante() ?? 0;
                     $partido->setGolesVisitante(max(0, $actualVisitante - 1));
                     break;
+
+                case 'reiniciar':
+                    $partido->setEstado(null);
+                    $partido->setFecha(null);
+                    $partido->setGolesLocal(null);
+                    $partido->setGolesVisitante(null);
+                    break;                    
             
                 case 'finalizar':
                     $partido->setEstado('Finalizado');
+                    $cuadroFinalService->verificarYActualizarCrucesPorGrupo($partido->getGrupo());
                     break;
             }
         

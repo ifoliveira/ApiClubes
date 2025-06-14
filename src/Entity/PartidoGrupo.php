@@ -35,6 +35,12 @@ class PartidoGrupo
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $estado = null;
 
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $aliasLocal = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $aliasVisitante = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -133,5 +139,29 @@ class PartidoGrupo
         }
     
         return null;
+    }
+
+    public function getAliasLocal(): ?string
+    {
+        return $this->aliasLocal;
+    }
+
+    public function setAliasLocal(?string $aliasLocal): static
+    {
+        $this->aliasLocal = $aliasLocal;
+
+        return $this;
+    }
+
+    public function getAliasVisitante(): ?string
+    {
+        return $this->aliasVisitante;
+    }
+
+    public function setAliasVisitante(?string $aliasVisitante): static
+    {
+        $this->aliasVisitante = $aliasVisitante;
+
+        return $this;
     }    
 }

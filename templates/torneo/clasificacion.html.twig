@@ -13,7 +13,7 @@
             padding: 2rem 1rem;
         }
 
-        h2, h3 {
+        h2, h3 , .alert{
             text-align: center;
             margin-bottom: 1rem;
         }
@@ -57,12 +57,75 @@
                 font-size: 0.95rem;
             }
         }
+
+.selector-grupos {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.selector-grupos a {
+    background-color: #2e3d4f;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.selector-grupos a:hover {
+    background-color: #4CAF50;
+    color: #000;
+}
+
+.selector-grupos a.selected {
+    background-color: #f9d923;
+    color: #000;
+    border: 2px solid #fff;
+}
+
+
     </style>
 </head>
 <body>
 
+
+    <div class="alert alert-info text-center mt-4 mx-3">
+        <strong>¡Estás viendo una demo en vivo!</strong><br>
+        Se ve la clasificación del grupo del equipo seleccionado, se actualiza automáticamente con los datos reales del torneo.
+    </div>
+    <div class="selector-grupos">
+        {% for g in grupos %}
+            <a href="{{ path('clasificacion_grupo', {
+                equipoId: 0,
+                slug: torneo.slug,
+                grupoId: g.id
+            }) }}"
+            class="{{ g.id == grupo.id ? 'selected' : '' }}">
+                {{ g.nombre }}
+            </a>
+        {% endfor %}
+    </div>
+
+    <div class="selector-grupos">
+            <a href="{{ path('torneo_cuadro_final', {
+                slug: torneo.slug
+            }) }}">
+                CUADRO FINAL
+            </a>
+    </div>
+
     <h2>Clasificación - {{ grupo.nombre }}</h2>
-<h2>Equipo seleccionado - {{ equipoSeleccionado.nombre }}</h2>
+    {% if equipoSeleccionado %}
+        <h2>Equipo seleccionado - {{ equipoSeleccionado.nombre }}</h2>
+    {% else %}
+        <h2>Ningún equipo seleccionado</h2>
+    {% endif %}
+
 
     <table>
         <thead>
@@ -77,7 +140,13 @@
         </thead>
         <tbody>
         {% for fila in clasificacion %}
-            <tr class="{{ fila.equipo.nombre == equipoSeleccionado.nombre ? 'destacado' : '' }}">
+
+            {% if equipoSeleccionado %}
+                <tr class="{{ fila.equipo.nombre == equipoSeleccionado.nombre ? 'destacado' : '' }}">
+            {% else %}
+                <tr class="">
+            {% endif %}
+
             <td>{{ fila.equipo.nombre }}</td>
             <td>{{ fila.pj }}</td>
             <td>{{ fila.puntos }}</td>
@@ -101,8 +170,15 @@
     </thead>
     <tbody>
         {% for partido in partidos %}
-            <tr class="{{ (partido.local.nombre == equipoSeleccionado.nombre or partido.visitante.nombre == equipoSeleccionado.nombre) ? 'destacado' : '' }}">
 
+            {% if equipoSeleccionado %}
+                <tr class="{{ (partido.local.nombre == equipoSeleccionado.nombre or partido.visitante.nombre == equipoSeleccionado.nombre) ? 'destacado' : '' }}">
+
+            {% else %}
+                <tr class="''">
+
+            {% endif %}        
+            
                 <td>{{ partido.fecha ? partido.fecha|date('d/m H:i') : 'Sin fecha' }}</td>
 
                 <td>{{ partido.local.nombre }}</td>

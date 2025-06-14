@@ -37,7 +37,27 @@
             cursor: pointer;
             transition: background 0.3s ease;
             border: 2px solid transparent;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+
+            height: 4.5em; /* altura constante para 2 líneas aprox */
         }
+
+        .equipo span {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            line-height: 1.2em;
+            max-height: 2.4em;
+        }
+
+
 
         .equipo:hover {
             background: rgba(255, 255, 255, 0.2);
@@ -57,18 +77,34 @@
     </style>
 </head>
 <body>
+    
+
+    <div class="alert alert-info text-center mt-4 mx-3">
+        <strong>¡Estás viendo una demo en vivo!</strong><br>
+        Selecciona un equipo para seguir el torneo desde su punto de vista: verás los partidos jugados, la clasificación de grupos y cómo se forman los cruces finales automáticamente.
+    </div>
+    <div class="alert alert-info text-center mt-4 mx-3">
+        <a href="{{ asset('pdfs/' ~ torneo.slug ~ '.pdf') }}" download class="btn btn-success btn-lg">
+            📥 Descargar Cuadro del Torneo
+        </a>
+    </div>
+
     <h1>{{torneo.nombre}}</h1>
     <h2>Selecciona tu equipo</h2>
 
+
     <div class="grid">
-        {% for equipo in equipos %}
+        {% for equipo in equiposTorneo %}
+            {% set equipoGrupo = equipo.equipoGrupos|first %}        
             <div class="equipo">
-                <a href="{{ path('clasificacion_grupo', { id: equipo.id }) }}">
+                <a href="{{ path('clasificacion_grupo', { equipoId: equipo.id ,  slug: torneo.slug , grupoId:  equipoGrupo.grupo.id,}) }}">
                     {{ equipo.nombre }}
                 </a>
             </div>
         {% endfor %}
     </div>
+
+
 
 </body>
 </html>

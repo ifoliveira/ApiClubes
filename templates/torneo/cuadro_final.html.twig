@@ -53,45 +53,35 @@
 </head>
 <body>
 
-    <h2>Cuadro Final del Torneo</h2>
+<h2 class="text-center">Cuadro Final del Torneo</h2>
 
+{% for nombreFase, partidos in fases %}
     <div class="fase">
-        <h3>Semifinales</h3>
-        {% for p in semifinales %}
+        <h3>{{ nombreFase|capitalize|replace({'_': ' '}) }}</h3>
+
+        {% for partido in partidos %}
             <div class="partido">
-                <strong>{{ p.partido }}</strong>
+                <strong>
+                    {{ partido.local ? partido.local.nombre : partido.aliasLocal }}
+                    vs
+                    {{ partido.visitante ? partido.visitante.nombre : partido.aliasVisitante }}
+                </strong>
+
                 <div class="resultado">
-                    <span>{{ p.local }} ({{ p.goles_local }})</span>
-                    <span>{{ p.visitante }} ({{ p.goles_visitante }})</span>
+                    {% if partido.golesLocal is not null and partido.golesVisitante is not null %}
+                        <span>{{ partido.golesLocal }} - {{ partido.golesVisitante }}</span>
+                        {% if partido.penalties %}
+                            <p><small>Penaltis: {{ partido.penalties }}</small></p>
+                        {% endif %}
+                    {% else %}
+                        <span>Por jugar</span>
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}
     </div>
-
-    <div class="fase">
-        <h3>Final</h3>
-        <div class="partido">
-            <strong>{{ final.partido }}</strong>
-            <div class="resultado">
-                <span>{{ final.local }} ({{ final.goles_local }})</span>
-                <span>{{ final.visitante }} ({{ final.goles_visitante }})</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="fase">
-        <h3>3º y 4º Puesto</h3>
-        <div class="partido">
-            <strong>{{ tercerPuesto.partido }}</strong>
-            <div class="resultado">
-                <span>{{ tercerPuesto.local }} ({{ tercerPuesto.goles_local }})</span>
-                <span>{{ tercerPuesto.visitante }} ({{ tercerPuesto.goles_visitante }})</span>
-            </div>
-            {% if tercerPuesto.penaltis %}
-                <p><small>Penaltis: {{ tercerPuesto.penaltis }}</small></p>
-            {% endif %}
-        </div>
-    </div>
+{% endfor %}
 
 </body>
+
 </html>
