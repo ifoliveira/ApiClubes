@@ -185,7 +185,7 @@
                 <td>
                     {% if partido.golesLocal is not null and partido.golesVisitante is not null %}
                         {% if partido.estado == 'En Juego' %}
-                            {{ partido.golesLocal }} - {{ partido.golesVisitante }} <em>(min {{partido.minutoEnJuego }}')</em>
+                            {{ partido.golesLocal }} - {{ partido.golesVisitante }} <em>({{partido.minutoEnJuego }}')</em>
                         {% elseif partido.estado == 'Finalizado' %}
                             {{ partido.golesLocal }} - {{ partido.golesVisitante }} <em>(Final)</em>
                         {% else %}
