@@ -35,7 +35,7 @@ class PublicidadSubscriber implements EventSubscriberInterface
         }
 
         // Rutas donde queremos mostrar publicidad
-        $rutasConPublicidad = ['clasificacion_grupo'];
+        $rutasConPublicidad = ['clasificacion_grupoX'];
 
         if (in_array($rutaActual, $rutasConPublicidad)) {
 
