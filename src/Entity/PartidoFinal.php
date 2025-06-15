@@ -50,6 +50,15 @@ class PartidoFinal
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $fase = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $localizacion = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $fechaInicio = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $fechaFin = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -195,6 +204,111 @@ class PartidoFinal
     public function setFase(?string $fase): static
     {
         $this->fase = $fase;
+
+        return $this;
+    }
+
+    public function getLocalizacion(): ?string
+    {
+        return $this->localizacion;
+    }
+
+    public function setLocalizacion(?string $localizacion): static
+    {
+        $this->localizacion = $localizacion;
+
+        return $this;
+    }
+
+    public function getGanador(): ?EquipoTorneo
+    {
+        if ($this->golesLocal === null || $this->golesVisitante === null) {
+            return null;
+        }
+    
+        if ($this->golesLocal > $this->golesVisitante) {
+            return $this->local;
+        } elseif ($this->golesVisitante > $this->golesLocal) {
+            return $this->visitante;
+        }
+    
+        // Si hay empate, mirar penalties
+        if ($this->penalties) {
+            [$penLocal, $penVisitante] = explode('-', $this->penalties);
+            if ((int)$penLocal > (int)$penVisitante) {
+                return $this->local;
+            } elseif ((int)$penVisitante > (int)$penLocal) {
+                return $this->visitante;
+            }
+        }
+    
+        return null;
+    }
+
+
+    public function getPerdedor(): ?EquipoTorneo
+    {
+        if ($this->golesLocal === null || $this->golesVisitante === null) {
+            return null;
+        }
+    
+        if ($this->golesLocal > $this->golesVisitante) {
+            return $this->visitante;
+        } elseif ($this->golesVisitante > $this->golesLocal) {
+            return $this->local;
+        }
+    
+        // Si hay empate, mirar penalties
+        if ($this->penalties) {
+            [$penLocal, $penVisitante] = explode('-', $this->penalties);
+            if ((int)$penLocal > (int)$penVisitante) {
+                return $this->visitante;
+            } elseif ((int)$penVisitante > (int)$penLocal) {
+                return $this->local;
+            }
+        }
+    
+        return null;
+    }    
+
+    public function getMinutoEnJuego(): ?int
+    {
+        if ($this->estado === 'En Juego' && $this->fechaInicio !== null) {
+            $now = new \DateTime();
+            $interval = $this->fechaInicio->diff($now);
+            $minutos = ($interval->h * 60) + $interval->i;
+    
+            // Si hay diferencia de segundos, sumar 1 aunque los minutos completos sean 0
+            if ($minutos === 0 && $interval->s > 0) {
+                return 1;
+            }
+    
+            return max(1, $minutos);
+        }
+    
+        return null;
+    }
+
+    public function getFechaInicio(): ?\DateTimeInterface
+    {
+        return $this->fechaInicio;
+    }
+
+    public function setFechaInicio(?\DateTimeInterface $fechaInicio): static
+    {
+        $this->fechaInicio = $fechaInicio;
+
+        return $this;
+    }
+
+    public function getFechaFin(): ?\DateTimeInterface
+    {
+        return $this->fechaFin;
+    }
+
+    public function setFechaFin(?\DateTimeInterface $fechaFin): static
+    {
+        $this->fechaFin = $fechaFin;
 
         return $this;
     }

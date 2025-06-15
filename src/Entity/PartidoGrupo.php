@@ -41,6 +41,18 @@ class PartidoGrupo
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $aliasVisitante = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $localizacion = null;
+
+    #[ORM\Column(length: 20,  nullable: true)]
+    private ?string $penalties = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $fechaInicio = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $fechaFin = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -130,16 +142,29 @@ class PartidoGrupo
         return $this;
     }
 
+    public function getFase(): ?string
+    {
+        return 'Fase de Grupos';
+    }    
+
     public function getMinutoEnJuego(): ?int
     {
-        if ($this->estado === 'En Juego' && $this->fecha !== null) {
+        if ($this->estado === 'En Juego' && $this->fechaInicio !== null) {
             $now = new \DateTime();
-            $interval = $this->fecha->diff($now);
-            return ($interval->h * 60) + $interval->i;
+            $interval = $this->fechaInicio->diff($now);
+            $minutos = ($interval->h * 60) + $interval->i;
+    
+            // Si hay diferencia de segundos, sumar 1 aunque los minutos completos sean 0
+            if ($minutos === 0 && $interval->s > 0) {
+                return 1;
+            }
+    
+            return max(1, $minutos);
         }
     
         return null;
     }
+
 
     public function getAliasLocal(): ?string
     {
@@ -161,6 +186,54 @@ class PartidoGrupo
     public function setAliasVisitante(?string $aliasVisitante): static
     {
         $this->aliasVisitante = $aliasVisitante;
+
+        return $this;
+    }
+
+    public function getLocalizacion(): ?string
+    {
+        return $this->localizacion;
+    }
+
+    public function setLocalizacion(?string $localizacion): static
+    {
+        $this->localizacion = $localizacion;
+
+        return $this;
+    }
+
+    public function getPenalties(): ?string
+    {
+        return $this->penalties;
+    }
+
+    public function setPenalties(string $penalties): static
+    {
+        $this->penalties = $penalties;
+
+        return $this;
+    }
+
+    public function getFechaInicio(): ?\DateTimeInterface
+    {
+        return $this->fechaInicio;
+    }
+
+    public function setFechaInicio(?\DateTimeInterface $fechaInicio): static
+    {
+        $this->fechaInicio = $fechaInicio;
+
+        return $this;
+    }
+
+    public function getFechaFin(): ?\DateTimeInterface
+    {
+        return $this->fechaFin;
+    }
+
+    public function setFechaFin(?\DateTimeInterface $fechaFin): static
+    {
+        $this->fechaFin = $fechaFin;
 
         return $this;
     }    

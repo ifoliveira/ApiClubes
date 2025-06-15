@@ -18,6 +18,24 @@ use Knp\Snappy\Pdf;
 
 class TorneoController extends AbstractController
 {
+
+
+    #[Route('/torneo/{slug}', name: 'portada_torneo')]
+    public function portada(string $slug, TorneosRepository $torneosRepository): Response
+    {
+        $torneo = $torneosRepository->findOneBy(['slug' => $slug]);
+
+        if (!$torneo) {
+            throw $this->createNotFoundException('Torneo no encontrado');
+        }
+    
+        return $this->render('torneo/portada.html.twig', [
+            'torneo' => $torneo,
+        ]);
+
+
+    }
+
     #[Route('/torneo/{slug}/entrada', name: 'torneo_entrada')]
     public function entrada(string $slug, EquipoTorneoRepository $equipoTorneoRepository, TorneosRepository $torneosRepository): Response
     {
@@ -99,43 +117,54 @@ class TorneoController extends AbstractController
     public function cuadroFinal(
         string $slug,
         TorneosRepository $torneosRepository,
-        GrupoRepository $grupoRepository,
         PartidoFinalRepository $partidoFinalRepository,
         Request $request
     ): Response 
     {
         $torneo = $torneosRepository->findOneBy(['slug' => $slug]);
-
+    
         if (!$torneo) {
             throw $this->createNotFoundException('Torneo no encontrado');
         }
-
+    
+        // Obtener todos los partidos finales de ese torneo
         $partidos = $partidoFinalRepository->findBy(
             ['torneo' => $torneo],
-            ['fase' => 'ASC'] // opcional si quieres ordenado por fase
+            ['fase' => 'ASC']
         );
-        
-        // o agrupar por fase en PHP si lo prefieres
-        $agrupadosPorFase = [];
-
+    
+        // Agrupar por fase
+        $fases = [];
         foreach ($partidos as $p) {
             $fase = $p->getFase() ?? 'sin_fase';
-        
-            if (!array_key_exists($fase, $agrupadosPorFase)) {
-                $agrupadosPorFase[$fase] = [];
-            }
-        
-            $agrupadosPorFase[$fase][] = $p;
+            $fases[$fase][] = $p;
         }
-        
-        
-
-        // Renderizar la vista del cuadro final
+    
+        // Construir descripciones de alias tipo WINNER-{id} y LOSER-{id}
+        $descripcionesAlias = [];
+        foreach ($fases as $fase => $partidosDeFase) {
+            foreach ($partidosDeFase as $partido) {
+                foreach (['aliasLocal', 'aliasVisitante'] as $campoAlias) {
+                    $alias = $partido->{'get' . ucfirst($campoAlias)}();
+                    if (preg_match('/^(WINNER|LOSER)-(\d+)$/', $alias, $matches)) {
+                        $referido = $partidoFinalRepository->find($matches[2]);
+                        if ($referido) {
+                            $nombreLocal = $referido->getLocal()?->getNombre() ?? $referido->getAliasLocal();
+                            $nombreVisitante = $referido->getVisitante()?->getNombre() ?? $referido->getAliasVisitante();
+                            $descripcionesAlias[$alias] = "$nombreLocal vs $nombreVisitante";
+                        }
+                    }
+                }
+            }
+        }
+    
         return $this->render('torneo/cuadro_final.html.twig', [
-            'fases' => $agrupadosPorFase
+            'torneo' => $torneo,
+            'fases' => $fases,
+            'descripcionesAlias' => $descripcionesAlias,
         ]);
     }
-
+    
 
     private function calcularClasificacion(Grupo $grupo, PartidoGrupoRepository $partidoRepo): array
     {
@@ -152,6 +181,7 @@ class TorneoController extends AbstractController
                 'gc' => 0,
                 'dg' => 0,
                 'pj' => 0,
+                'posicionManual' => $eg->getPosicionManual(), 
             ];
         }
     
@@ -194,8 +224,29 @@ class TorneoController extends AbstractController
     
         // Ordenar por puntos, luego diferencia de goles, luego goles a favor
         usort($tabla, function ($a, $b) {
-            return [$b['puntos'], $b['dg'], $b['gf']] <=> [$a['puntos'], $a['dg'], $a['gf']];
+            // Criterios normales
+            $criteriosA = [$a['puntos'], $a['dg'], $a['gf']];
+            $criteriosB = [$b['puntos'], $b['dg'], $b['gf']];
+        
+            if ($criteriosA !== $criteriosB) {
+                return $criteriosB <=> $criteriosA; // Orden normal
+            }
+        
+            // Si están empatados, miramos si hay posición manual
+            $manualA = $a['posicionManual'];
+            $manualB = $b['posicionManual'];
+        
+            if ($manualA !== null && $manualB !== null) {
+                return $manualA <=> $manualB; // El más bajo gana
+            }
+        
+            // Si solo uno tiene valor manual, gana ese
+            if ($manualA !== null) return -1;
+            if ($manualB !== null) return 1;
+        
+            return 0; // Completamente iguales
         });
+        
     
         return $tabla;
     }

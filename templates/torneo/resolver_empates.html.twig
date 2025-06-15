@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Resolver Empates – {{ grupo.nombre }}</title>
+    <style>
+        body { background: #1e2a38; color: #fff; font-family: sans-serif; padding: 2rem; }
+        table { margin: auto; background: #2e3d4f; border-radius: 8px; padding: 1rem; }
+        th, td { padding: 0.75rem; }
+        th { background: #f9d923; color: #000; }
+        input[type=number] { width: 60px; padding: 0.25rem; }
+        button { margin-top: 1rem; padding: 0.5rem 1.5rem; background: #4CAF50; color: white; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<h2>⚖️ Resolver Empates – {{ grupo.nombre }}</h2>
+
+{% if equiposEmpatados is empty %}
+    <p>No hay empates a resolver.</p>
+{% else %}
+    <form method="post">
+        <table>
+            <tr>
+                <th>Equipo</th>
+                <th>Posición Manual</th>
+            </tr>
+            {% for equipo in equiposEmpatados %}
+                <tr>
+                    <td>{{ equipo.nombre }}</td>
+                    <td><input type="number" name="posiciones[{{ equipo.id }}]" min="1" /></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <button type="submit">💾 Guardar posiciones</button>
+    </form>
+{% endif %}
+
+</body>
+</html>

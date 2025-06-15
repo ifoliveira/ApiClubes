@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Resolver Empates - {{ torneo.nombre }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: #1e2a38;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+        }
+
+        .grupo-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 400px;
+            margin: auto;
+        }
+
+        .grupo-item a {
+            background: #f9d923;
+            color: #000;
+            padding: 1rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            display: block;
+            transition: background 0.3s ease;
+        }
+
+        .grupo-item a:hover {
+            background: #e4c41b;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Resolver Empates – {{ torneo.nombre }}</h1>
+
+    <div class="grupo-lista">
+        {% for grupo in torneo.grupos %}
+            <div class="grupo-item">
+                <a href="{{ path('resolver_empates', { grupoId: grupo.id }) }}">
+                    ⚖️ {{ grupo.nombre }}
+                </a>
+            </div>
+        {% else %}
+            <p>No hay grupos registrados en este torneo.</p>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

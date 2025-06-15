@@ -185,14 +185,14 @@
                 <td>
                     {% if partido.golesLocal is not null and partido.golesVisitante is not null %}
                         {% if partido.estado == 'En Juego' %}
-                            {{ partido.golesLocal }} - {{ partido.golesVisitante }} <em>({{partido.estado }})</em>
+                            {{ partido.golesLocal }} - {{ partido.golesVisitante }} <em>(min {{partido.minutoEnJuego }}')</em>
                         {% elseif partido.estado == 'Finalizado' %}
                             {{ partido.golesLocal }} - {{ partido.golesVisitante }} <em>(Final)</em>
                         {% else %}
                             {{ partido.fecha ? partido.fecha|date('H:i') : 'Sin hora' }}
                         {% endif %}
                     {% else %}
-                        vs
+                        <em>Sin iniciar</em>
                     {% endif %}
                 </td>
                 <td>{{ partido.visitante.nombre }}</td>

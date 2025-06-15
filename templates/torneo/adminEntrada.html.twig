@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Seguimiento – {{ torneo.nombre }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #1e2a38;
+            color: white;
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+        }
+
+        .opciones {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 600px) {
+            .opciones {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Seguimiento en Vivo – {{ torneo.nombre }}</h1>
+
+    <div class="opciones">
+        <a href="{{ path('seguimiento_vivo_grupos', { slug: torneo.slug }) }}" class="btn">
+            🟦 Fase de Grupos
+        </a>
+
+        <a href="{{ path('seguimiento_vivo_final', { slug: torneo.slug }) }}" class="btn">
+            🏆 Fase Final
+        </a>
+
+        <a class="btn" href="{{ path('admin_resolver_empates_global', { slug: torneo.slug }) }}">
+            ⚖️ Resolver Empates
+        </a>        
+    </div>
+
+</body>
+</html>

@@ -25,7 +25,12 @@ class CuadroFinalService
         // Verifica si todos los partidos del grupo están finalizados
         foreach ($partidos as $p) {
             if ($p->getEstado() !== 'Finalizado') {
-                return; // Aún no ha terminado el grupo
+                // Si estaba ya clasificado, revertir
+                $grupoLetra = strtoupper(substr($grupo->getNombre(), -1));
+                $this->deshacerAlias($grupoLetra . '1');
+                $this->deshacerAlias($grupoLetra . '2');
+                $this->em->flush();
+                return;
             }
         }
 
@@ -54,21 +59,23 @@ class CuadroFinalService
         $partidos = $this->partidoFinalRepo->findBy([
             'aliasLocal' => $alias
         ]);
-
+    
         foreach ($partidos as $partido) {
-            $partido->setLocal($equipo);
-            $partido->setAliasLocal(null);
-        }
+                $partido->setLocal($equipo);
 
+        }
+    
         $partidos = $this->partidoFinalRepo->findBy([
             'aliasVisitante' => $alias
         ]);
-
+    
         foreach ($partidos as $partido) {
-            $partido->setVisitante($equipo);
-            $partido->setAliasVisitante(null);
+            
+                $partido->setVisitante($equipo);
+
         }
     }
+    
 
     private function calcularClasificacion(Grupo $grupo, PartidoGrupoRepository $partidoRepo): array
     {
@@ -85,6 +92,7 @@ class CuadroFinalService
                 'gc' => 0,
                 'dg' => 0,
                 'pj' => 0,
+                'posicionManual' => $eg->getPosicionManual(), 
             ];
         }
     
@@ -127,10 +135,123 @@ class CuadroFinalService
     
         // Ordenar por puntos, luego diferencia de goles, luego goles a favor
         usort($tabla, function ($a, $b) {
-            return [$b['puntos'], $b['dg'], $b['gf']] <=> [$a['puntos'], $a['dg'], $a['gf']];
+            // Criterios normales
+            $criteriosA = [$a['puntos'], $a['dg'], $a['gf']];
+            $criteriosB = [$b['puntos'], $b['dg'], $b['gf']];
+        
+            if ($criteriosA !== $criteriosB) {
+                return $criteriosB <=> $criteriosA; // Orden normal
+            }
+        
+            // Si están empatados, miramos si hay posición manual
+            $manualA = $a['posicionManual'];
+            $manualB = $b['posicionManual'];
+        
+            if ($manualA !== null && $manualB !== null) {
+                return $manualA <=> $manualB; // El más bajo gana
+            }
+        
+            // Si solo uno tiene valor manual, gana ese
+            if ($manualA !== null) return -1;
+            if ($manualB !== null) return 1;
+        
+            return 0; // Completamente iguales
         });
+        
     
         return $tabla;
+    }  
+
+    private function deshacerAlias(string $alias): void
+    {
+        // Deshacer como local
+        $partidosLocal = $this->partidoFinalRepo->findBy(['aliasLocal' => $alias]);
+        foreach ($partidosLocal as $partido) {
+            if ($partido->getLocal() !== null) {
+                $partido->setLocal(null);
+            }
+        }
+    
+        // Deshacer como visitante
+        $partidosVisitante = $this->partidoFinalRepo->findBy(['aliasVisitante' => $alias]);
+        foreach ($partidosVisitante as $partido) {
+            if ($partido->getVisitante() !== null) {
+                $partido->setVisitante(null);
+            }
+        }
+    }
+
+    public function rellenarSiguientesCruces(PartidoFinal $partido): void
+    {
+        // Solo si hay resultado válido
+        if (
+            $partido->getGolesLocal() === null || 
+            $partido->getGolesVisitante() === null
+        ) {
+           // Si estaba ya clasificado, revertir
+           $this->deshacerAlias('WINNER-' . $partido->getId());  
+           $this->deshacerAlias('LOSER-' . $partido->getId());
+
+          $this->em->flush();
+             return;
+
+            }
+    
+    
+        // Determinar ganador y perdedor
+        $golesLocal = $partido->getGolesLocal();
+        $golesVisitante = $partido->getGolesVisitante();
+        $ganador = null;
+        $perdedor = null;
+    
+        if ($golesLocal > $golesVisitante) {
+            $ganador = $partido->getLocal();
+            $perdedor = $partido->getVisitante();
+        } elseif ($golesVisitante > $golesLocal) {
+            $ganador = $partido->getVisitante();
+            $perdedor = $partido->getLocal();
+        } elseif ($partido->getPenalties()) {
+            // En caso de empate, usar penaltis
+            [$penLocal, $penVisitante] = explode('-', $partido->getPenalties());
+            if ((int)$penLocal > (int)$penVisitante) {
+                $ganador = $partido->getLocal();
+                $perdedor = $partido->getVisitante();
+            } else {
+                $ganador = $partido->getVisitante();
+                $perdedor = $partido->getLocal();
+            }
+        } else {
+            // No puede continuar sin resultado válido
+            return;
+        }
+    
+        $id = $partido->getId();
+        $this->asignarEquipoPorAlias("WINNER-$id", $ganador);
+        $this->asignarEquipoPorAlias("LOSER-$id", $perdedor);
+    
+        $this->em->flush();
+    }
+    private function asignarEquipoPorAlias(string $alias, $equipo): void
+    {
+        // Buscar partidos con el alias
+        $partidos = $this->partidoFinalRepo->findBy(['aliasLocal' => $alias]);
+    
+        foreach ($partidos as $partido) {
+            if ($partido->getLocal() === null) {
+                $partido->setLocal($equipo);
+            }
+        }
+    
+        $partidos = $this->partidoFinalRepo->findBy(['aliasVisitante' => $alias]);
+    
+        foreach ($partidos as $partido) {
+            if ($partido->getVisitante() === null) {
+                $partido->setVisitante($equipo);
+            }
+        }
     }    
+    
+
+    
 }
 ?>

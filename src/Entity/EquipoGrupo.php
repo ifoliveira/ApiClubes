@@ -19,6 +19,9 @@ class EquipoGrupo
     #[ORM\ManyToOne(inversedBy: 'equipoGrupos')]
     private ?Grupo $grupo = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $posicionManual = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +47,18 @@ class EquipoGrupo
     public function setGrupo(?Grupo $grupo): static
     {
         $this->grupo = $grupo;
+
+        return $this;
+    }
+
+    public function getPosicionManual(): ?int
+    {
+        return $this->posicionManual;
+    }
+
+    public function setPosicionManual(?int $posicionManual): static
+    {
+        $this->posicionManual = $posicionManual;
 
         return $this;
     }

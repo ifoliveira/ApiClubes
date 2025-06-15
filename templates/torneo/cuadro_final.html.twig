@@ -37,11 +37,33 @@
             color: #f9d923;
         }
 
-        .resultado {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
+        .info-extra {
+            font-size: 0.85rem;
+            color: #ccc;
+            margin-bottom: 0.5rem;
         }
+
+        .resultado {
+            font-weight: bold;
+            background: #1c2339;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            margin-top: 0.5rem;
+            color: #fff;
+            font-size: 0.95rem;
+
+            /* Centramos el texto */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+.resultado small {
+    color: #aaa;
+    font-weight: normal;
+}
 
         @media (max-width: 500px) {
             .resultado {
@@ -49,6 +71,29 @@
                 gap: 0.5rem;
             }
         }
+
+        .partido {
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 0.5rem auto;
+            max-width: 400px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            background: #2e3a59;
+            transition: background 0.3s;
+        }
+
+        /* Añadir clases dinámicamente si usas esto con JS o Twig */
+        .partido.finalizado {
+            background: #264d3b; /* verde oscuro */
+        }
+
+        .partido.en_juego {
+            background: #4b3e1f; /* amarillo tostado */
+        }
+
+        .partido.pendiente {
+            background: #2e3a59; /* azul gris por defecto */
+        }        
     </style>
 </head>
 <body>
@@ -62,19 +107,51 @@
         {% for partido in partidos %}
             <div class="partido">
                 <strong>
-                    {{ partido.local ? partido.local.nombre : partido.aliasLocal }}
+                    {% if partido.local %}
+                        {{ partido.local.nombre }}
+                    {% elseif partido.aliasLocal starts with 'WINNER-' %}
+                        🏆 GANADOR de {{ descripcionesAlias[partido.aliasLocal]|default(partido.aliasLocal) }}
+                    {% elseif partido.aliasLocal starts with 'LOSER-' %}
+                        ❌ PERDEDOR de {{ descripcionesAlias[partido.aliasLocal]|default(partido.aliasLocal) }}
+                    {% else %}
+                        {{ partido.aliasLocal }}
+                    {% endif %}
+
                     vs
-                    {{ partido.visitante ? partido.visitante.nombre : partido.aliasVisitante }}
+
+                    {% if partido.visitante %}
+                        {{ partido.visitante.nombre }}
+                    {% elseif partido.aliasVisitante starts with 'WINNER-' %}
+                        🏆 GANADOR de {{ descripcionesAlias[partido.aliasVisitante]|default(partido.aliasVisitante) }}
+                    {% elseif partido.aliasVisitante starts with 'LOSER-' %}
+                        ❌ PERDEDOR de {{ descripcionesAlias[partido.aliasVisitante]|default(partido.aliasVisitante) }}
+                    {% else %}
+                        {{ partido.aliasVisitante }}
+                    {% endif %}
                 </strong>
 
+
+                <div class="info-extra">
+                    {% if partido.fecha %}
+                        🕒 {{ partido.fecha|date('d/m/Y H:i') }}
+                    {% endif %}
+                    {% if partido.localizacion %}
+                        <br/>🏟️ {{ partido.localizacion }}
+                    {% endif %}
+                </div>
+
                 <div class="resultado">
-                    {% if partido.golesLocal is not null and partido.golesVisitante is not null %}
-                        <span>{{ partido.golesLocal }} - {{ partido.golesVisitante }}</span>
+                    {% if partido.estado == 'Finalizado' and partido.golesLocal is not null and partido.golesVisitante is not null %}
+                        ✅ Finalizado: {{ partido.golesLocal }} - {{ partido.golesVisitante }}
                         {% if partido.penalties %}
-                            <p><small>Penaltis: {{ partido.penalties }}</small></p>
+                            <br><small>🎯 Penaltis: {{ partido.penalties }}</small>
                         {% endif %}
+
+                    {% elseif partido.estado == 'En juego' %}
+                        🟡 En juego: {{ partido.golesLocal ?? 0 }} - {{ partido.golesVisitante ?? 0 }}
+
                     {% else %}
-                        <span>Por jugar</span>
+                        🕒 Por jugar
                     {% endif %}
                 </div>
             </div>
@@ -83,5 +160,4 @@
 {% endfor %}
 
 </body>
-
 </html>

@@ -138,27 +138,120 @@
 
       .btn.icon-btn:hover {
           color: #f9d923;
-      }        
+      }    
+
+      .alert {
+          padding: 1rem;
+          margin: 1rem auto;
+          max-width: 600px;
+          border-radius: 8px;
+          font-weight: bold;
+          text-align: center;
+      }
+
+      .alert-error {
+          background-color: #f44336;
+          color: white;
+      }
+
+      .alert-success {
+          background-color: #4CAF50;
+          color: white;
+      }
+
+
+.selector-grupos a {
+    background-color: #2e3d4f;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.selector-grupos a:hover {
+    background-color: #4CAF50;
+    color: #000;
+}
+
+.selector-grupos a.selected {
+    background-color: #f9d923;
+    color: #000;
+    border: 2px solid #fff;
+}
+
+.selector-grupos {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+
     </style>
 </head>
 <body>
 
+
 <h2>Seguimiento en Vivo – {{ torneo.nombre }}</h2>
 
-<table style="width: 100%; border-collapse: collapse;">
-  <thead>
+<div class="selector-grupos">
+    <a href="{{ path('seguimiento_vivo', {
+                slug: torneo.slug
+            }) }}">
+                INICIO
+            </a>
+
+    <a href="{{ path('seguimiento_vivo_grupos', {
+                slug: torneo.slug
+            }) }}">
+                GRUPOS
+            </a>  
+
+    <a href="{{ path('seguimiento_vivo_final', {
+                slug: torneo.slug
+            }) }}">
+                FASE FINAL
+            </a>            
+</div>
+
+{% for label, messages in app.flashes %}
+    {% for msg in messages %}
+        <div class="alert alert-{{ label }}">
+            {{ msg }}
+        </div>
+    {% endfor %}
+{% endfor %}
+
+{% set faseActual = null %}
+{% for partido in partidos %}
+    {% set fase = partido.fase ?? 'Fase de Grupos' %}
+
+    {% if fase != faseActual %}
+        {% if not loop.first %}
+            </tbody></table>
+        {% endif %}
+
+        <h3 style="text-align: center; margin-top: 2rem;">{{ fase }}</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 1rem;">
+          <thead>
+            <tr>
+              <th>Equipo Local</th>
+              <th>Resultado</th>
+              <th>Equipo Visitante</th>
+            </tr>
+          </thead>
+          <tbody>
+        {% set faseActual = fase %}
+    {% endif %}
+
     <tr>
-      <th>Equipo Local</th>
-      <th>Resultado</th>
-      <th>Equipo Visitante</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for partido in partidos %}
-      <tr>
         <td>
           <div style="text-align: center;">
-            <strong>{{ partido.local.nombre }}</strong>
+            <strong>{{ partido.local ? partido.local.nombre : partido.aliasLocal }}</strong>
             {% if partido.estado == 'En Juego' %}
               <form method="post" action="{{ path('partido_accion_rapida', { id: partido.id }) }}">
                 <input type="hidden" name="accion" value="gol_local">
@@ -173,36 +266,48 @@
         </td>
 
         <td style="text-align: center;">
-          {% if partido.estado == '' %}
+          {% if not partido.estado %}
             <form method="post" action="{{ path('partido_accion_rapida', { id: partido.id }) }}">
               <button class="btn iniciar" name="accion" value="iniciar">Iniciar</button>
             </form>
             <em>No iniciado</em>
           {% elseif partido.estado == 'En Juego' %}
             <strong>{{ partido.golesLocal }} - {{ partido.golesVisitante }}</strong><br/>
-            <small>(min {{ partido.minutoEnJuego }})</small><br/>
+            <small>(min {{ partido.minutoEnJuego }}')</small><br/>
             <form method="post" action="{{ path('partido_accion_rapida', { id: partido.id }) }}">
               <button class="btn finalizar" name="accion" value="finalizar">Finalizar</button>
             </form>
             <form method="post" action="{{ path('partido_accion_rapida', { id: partido.id }) }}" style="display:inline;">
-              <button class="btn icon-btn" name="accion" value="reiniciar" title="Reiniciar partido">
-                ♻️
-              </button>
-            </form>         
+              <button class="btn icon-btn" name="accion" value="reiniciar" title="Reiniciar partido">♻️</button>
+            </form>
           {% else %}
-            <strong>{{ partido.golesLocal }} - {{ partido.golesVisitante }}</strong><br/>
-            <em>Finalizado</em>
+          {% if fase != 'Fase de Grupos' %}
+            {% if partido.estado == 'Finalizado' and partido.golesLocal == partido.golesVisitante and not partido.penalties %}
+                <form method="post" action="{{ path('partido_accion_rapida', { id: partido.id }) }}">
+                    <input type="hidden" name="accion" value="penalties">
+                    <label>
+                        Penaltis (ej: 5-4): 
+                        <input type="text" name="penalties" placeholder="5-4" required>
+                    </label>
+                    <button class="btn sumar">Guardar Penaltis</button>
+                </form>
+            {% endif %} 
+          {% endif %}
+           <strong>{{ partido.golesLocal }} - {{ partido.golesVisitante }}</strong><br/>
+    
+            {% if partido.penalties %}
+                <em><small>🎯 Penaltis: {{ partido.penalties }}</small></em><br/>
+            {% endif %}   
+            <em>Finalizado</em><br/>                       
             <form method="post" action="{{ path('partido_accion_rapida', { id: partido.id }) }}" style="display:inline;">
-              <button class="btn icon-btn" name="accion" value="reiniciar" title="Reiniciar partido">
-                ♻️
-              </button>
-            </form>                
+              <button class="btn icon-btn" name="accion" value="reiniciar" title="Reiniciar partido">♻️</button>
+            </form>
           {% endif %}
         </td>
 
         <td>
           <div style="text-align: center;">
-            <strong>{{ partido.visitante.nombre }}</strong>
+            <strong>{{ partido.visitante ? partido.visitante.nombre : partido.aliasVisitante }}</strong>
             {% if partido.estado == 'En Juego' %}
               <form method="post" action="{{ path('partido_accion_rapida', { id: partido.id }) }}">
                 <input type="hidden" name="accion" value="gol_visitante">
@@ -215,10 +320,14 @@
             {% endif %}
           </div>
         </td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    </tr>
+
+    {% if loop.last %}
+        </tbody></table>
+    {% endif %}
+{% endfor %}
+
+
 
 </body>
 </html>
