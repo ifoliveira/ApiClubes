@@ -14,15 +14,35 @@ use App\Repository\GrupoRepository;
 use App\Repository\PartidoFinalRepository;
 use App\Entity\PartidoFinal;
 use Knp\Snappy\Pdf;
-
+use App\Entity\DemoAccess;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Service\Torneo\TelegramNotifierService;
 
 class TorneoController extends AbstractController
 {
 
 
     #[Route('/torneo/{slug}', name: 'portada_torneo')]
-    public function portada(string $slug, TorneosRepository $torneosRepository): Response
+    public function portada(TelegramNotifierService $notifier, Request $request, string $slug,EntityManagerInterface $em, TorneosRepository $torneosRepository): Response
     {
+
+        // Registrar acceso
+        $access = new DemoAccess();
+        $access->setAccessedAt(new \DateTimeImmutable());
+        $access->setIpAddress($request->getClientIp());
+        $access->setUserAgent($request->headers->get('User-Agent'));
+        $access->setSourceEmail($request->query->get('e')); // si se envía desde el email
+
+        $em->persist($access);
+        $em->flush();
+
+            // Enviar notificación Telegram
+            $mensaje = "📲 Nueva entrada a la DEMO\n".
+                    "🕒 ".(new \DateTime())->format('Y-m-d H:i:s')."\n".
+                    "📧 ".($request->query->get('e') ?? 'Sin email')."\n".
+                    "🌐 IP: ".$request->getClientIp();
+            $notifier->sendMessage($mensaje);       
+
         $torneo = $torneosRepository->findOneBy(['slug' => $slug]);
 
         if (!$torneo) {
