@@ -25,6 +25,8 @@ class TorneoController extends AbstractController
     #[Route('/torneo/{slug}', name: 'portada_torneo')]
     public function portada(TelegramNotifierService $notifier, Request $request, string $slug,EntityManagerInterface $em, TorneosRepository $torneosRepository): Response
     {
+         $club = $request->query->get('club', 'desconocido');
+        $modo = $request->query->get('modo', 'Publico');
 
         // Registrar acceso
         $access = new DemoAccess();
@@ -37,12 +39,13 @@ class TorneoController extends AbstractController
         $em->flush();
 
             // Enviar notificación Telegram
-            $mensaje = "📲 Nueva entrada a la DEMO\n".
-                    "🕒 ".(new \DateTime())->format('Y-m-d H:i:s')."\n".
-                    "📧 ".($request->query->get('e') ?? 'Sin email')."\n".
-                    "🌐 IP: ".$request->getClientIp();
-            $notifier->sendMessage($mensaje);       
-
+        $mensaje = "📲 Nueva entrada a la DEMO\n".
+               "🕒 ".(new \DateTime())->format('Y-m-d H:i:s')."\n".
+               "🏷️ Club: $club\n".
+               "🔐 Modo: $modo\n".
+               "📧 ".($request->query->get('e') ?? 'Sin email')."\n".
+               "🌐 IP: ".$request->getClientIp();     
+           $notifier->sendMessage($mensaje);
         $torneo = $torneosRepository->findOneBy(['slug' => $slug]);
 
         if (!$torneo) {
@@ -110,6 +113,14 @@ class TorneoController extends AbstractController
             if ($partido->getEstado() === 'en_juego' && $partido->getFecha() !== null) {
                 $now = new \DateTime();
                 $inicio = $partido->getFecha();
+        // Enviar notificación Telegram
+            $mensaje = "📲 Nueva entrada a la DEMO\n".
+               "🕒 ".(new \DateTime())->format('Y-m-d H:i:s')."\n".
+               "🏷️ Club: $club\n".
+               "🔐 Modo: $modo\n".
+               "📧 ".($request->query->get('e') ?? 'Sin email')."\n".
+               "🌐 IP: ".$request->getClientIp();     
+
                 $interval = $inicio->diff($now);
                 $minuto = ($interval->h * 60) + $interval->i;
                 $partido->minutoEnJuego = $minuto;

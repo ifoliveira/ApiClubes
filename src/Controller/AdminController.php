@@ -17,6 +17,9 @@ use App\Repository\PartidoFinalRepository;
 use App\Repository\GrupoRepository;
 use App\Entity\EquipoTorneo;
 use App\Entity\EquipoGrupo;
+use App\Entity\DemoAccess;
+use App\Service\Torneo\TelegramNotifierService;
+use App\Repository\DemoAccessRepository;
 
 /**
  * @Route("/")
@@ -75,7 +78,7 @@ class AdminController extends AbstractController
             }
     
             $em->persist($partido);
-        }
+        }   
     
         $em->flush();
     
@@ -87,16 +90,45 @@ class AdminController extends AbstractController
     #[Route('/torneo/{slug}/seguimiento', name: 'seguimiento_vivo')]
     public function seguimientoVivo(
         string $slug,
-        TorneosRepository $torneoRepo,
+        TorneosRepository $torneosRepository,
         PartidoGrupoRepository $partidoRepo,
-        PartidoFinalRepository $partidoFinalRepo
+        PartidoFinalRepository $partidoFinalRepo,
+        TelegramNotifierService $notifier,
+        Request $request,
+        EntityManagerInterface $em,
     ): Response {
-        $torneo = $torneoRepo->findOneBy(['slug' => $slug]);
+
+        $torneo = $torneosRepository->findOneBy(['slug' => $slug]);
+
         if (!$torneo) {
             throw $this->createNotFoundException('Torneo no encontrado');
         }
         
     
+        $club = $request->query->get('club', 'desconocido');
+        $modo = $request->query->get('modo', 'Privado');
+
+        // Registrar acceso
+        $access = new DemoAccess();
+        $access->setAccessedAt(new \DateTimeImmutable());
+        $access->setIpAddress($request->getClientIp());
+        $access->setUserAgent($request->headers->get('User-Agent'));
+        $access->setSourceEmail($request->query->get('e')); // si se envía desde el email
+
+        $em->persist($access);
+        $em->flush();
+
+        // Enviar notificación Telegram
+            $mensaje = "📲 Nueva entrada a la DEMO\n".
+               "🕒 ".(new \DateTime())->format('Y-m-d H:i:s')."\n".
+               "🏷️ Club: $club\n".
+               "🔐 Modo: $modo\n".
+               "📧 ".($request->query->get('e') ?? 'Sin email')."\n".
+               "🌐 IP: ".$request->getClientIp();     
+    $notifier->sendMessage($mensaje);
+        $torneo = $torneosRepository->findOneBy(['slug' => $slug]);
+
+
         return $this->render('torneo/adminEntrada.html.twig', [
             'torneo' => $torneo,
         ]);
