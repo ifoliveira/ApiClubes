@@ -1,0 +1,59 @@
+<div class="modal fade" id="demoGrupoModal" tabindex="-1" aria-labelledby="demoGrupoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="demoGrupoLabel">👀 Estás viendo un grupo del torneo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Estás siguiendo el torneo desde el punto de vista de 
+        </p>
+        <p>
+          <strong> {{equipoSeleccionado.nombre}}  </strong>
+        </p>        
+        <ul>
+          <li>⚽ Puedes ver su posición en el grupo</li>
+          <li>📊 Acceder a los resultados y partidos</li>
+          <li>🔁 Cambiar a otros grupos si lo deseas</li>
+        </ul>
+
+        <p class="mt-3 text-warning">
+        ⚠️ Estás viendo la versión pública de la demo. Los datos pueden modificarse desde la
+        <a href="{{ path('seguimiento_vivo', { slug: torneo.slug }) }}"
+            class="link-warning fw-bold"
+            target="_blank" rel="noopener noreferrer">
+            zona privada de organización
+        </a>.
+        </p>        
+        <p class="mt-2 text-muted small text-center">
+          Este mensaje se muestra solo en modo demo. Puedes volver a verlo desde <strong>❓ Ayuda demo</strong>.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (!sessionStorage.getItem("demoGrupoModalShown")) {
+        const modalElement = document.getElementById('demoGrupoModal');
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+            sessionStorage.setItem("demoGrupoModalShown", "1");
+        }
+    }
+});
+
+function mostrarDemoGrupoModal() {
+    const modalElement = document.getElementById('demoGrupoModal');
+    if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    }
+}
+</script>

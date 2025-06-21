@@ -45,7 +45,12 @@ class TorneoController extends AbstractController
                "🔐 Modo: $modo\n".
                "📧 ".($request->query->get('e') ?? 'Sin email')."\n".
                "🌐 IP: ".$request->getClientIp();     
-           $notifier->sendMessage($mensaje);
+               if ($request->getClientIP() === '127.0.0.1') {
+                    $mensaje .= "\n⚠️ **Modo Local**: No se enviará notificación Telegram.";
+                    } else {
+                    $notifier->sendMessage($mensaje);
+                    $mensaje .= "\n✅ Notificación enviada a Telegram.";
+                    }
         $torneo = $torneosRepository->findOneBy(['slug' => $slug]);
 
         if (!$torneo) {
@@ -98,7 +103,7 @@ class TorneoController extends AbstractController
         $equipoSeleccionado = null;
     
         if ($equipoId) {
-            $equipoGrupo = $equipoGrupoRepository->findOneBy(['equipo' => $equipoId, 'grupo' => $grupo]);
+            $equipoGrupo = $equipoGrupoRepository->findOneBy(['equipo' => $equipoId]);
     
             if (!$equipoGrupo) {
                 throw $this->createNotFoundException('El equipo no pertenece a este grupo');
@@ -144,11 +149,14 @@ class TorneoController extends AbstractController
     
 
 
-    #[Route('/torneo/{slug}/cuadro-final', name: 'torneo_cuadro_final')]
+    #[Route('/torneo/{slug}/cuadro-final/{equipoId}', name: 'torneo_cuadro_final')]
     public function cuadroFinal(
         string $slug,
+        int $equipoId,
         TorneosRepository $torneosRepository,
         PartidoFinalRepository $partidoFinalRepository,
+        GrupoRepository $grupoRepository,
+        equipoGrupoRepository $equipoGrupoRepository,
         Request $request
     ): Response 
     {
@@ -158,6 +166,17 @@ class TorneoController extends AbstractController
             throw $this->createNotFoundException('Torneo no encontrado');
         }
     
+        if ($equipoId) {
+            $equipoGrupo = $equipoGrupoRepository->findOneBy(['equipo' => $equipoId]);
+    
+            if (!$equipoGrupo) {
+                throw $this->createNotFoundException('El equipo no pertenece a este grupo');
+            }
+    
+            $equipoSeleccionado = $equipoGrupo->getEquipo();
+        }
+    
+        
         // Obtener todos los partidos finales de ese torneo
         $partidos = $partidoFinalRepository->findBy(
             ['torneo' => $torneo],
@@ -190,9 +209,12 @@ class TorneoController extends AbstractController
         }
     
         return $this->render('torneo/cuadro_final.html.twig', [
+            'grupo' =>  null, // No hay grupo en el cuadro final
+            'grupos' => $grupoRepository->findBy(['torneo' => $torneo]),
             'torneo' => $torneo,
             'fases' => $fases,
             'descripcionesAlias' => $descripcionesAlias,
+            'equipoSeleccionado' => $equipoSeleccionado ?? null,
         ]);
     }
     

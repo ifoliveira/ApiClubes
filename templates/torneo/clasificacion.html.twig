@@ -1,23 +1,21 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Clasificación {{ grupo.nombre }}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% set demoModalType = 'demogrupo' %}
+
+{% extends 'basetorneo.html.twig' %}
+
+{% block stylesheets %}
     <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: #1e2a38;
-            color: #fff;
-            padding: 2rem 1rem;
-        }
+        { box-sizing: border-box; }
 
         h2, h3 , .alert{
             text-align: center;
             margin-bottom: 1rem;
         }
-
+        .refresco-info {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #white;
+        }
         table {
             width: 100%;
             max-width: 600px;
@@ -58,73 +56,131 @@
             }
         }
 
-.selector-grupos {
+
+.partidos-lista {
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1rem 0;
 }
 
-.selector-grupos a {
-    background-color: #2e3d4f;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 10px;
-    border: 2px solid transparent;
+.partido-card {
+    background: #2e3d4f;
+    border-radius: 12px;
+    padding: 1rem;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.partido-card.destacado {
+    background: #f9d923;
+    color: black;
     font-weight: bold;
-    text-decoration: none;
-    transition: all 0.3s ease;
 }
 
-.selector-grupos a:hover {
-    background-color: #4CAF50;
-    color: #000;
+.partido-fecha {
+    font-size: 0.9rem;
+    color: #ccc;
+    margin-bottom: 0.5rem;
+    text-align: center;
 }
 
-.selector-grupos a.selected {
-    background-color: #f9d923;
-    color: #000;
-    border: 2px solid #fff;
+.partido-equipos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: 1rem;    
+}
+
+.partido-equipos span {
+    flex: 1;
+    font-weight: bold;
+    text-align: center;
+}
+
+.resultado {
+    font-size: 1rem !important;
+}
+
+.partidos-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1rem auto;
+    max-width: 600px; /* igual que la tabla de clasificación */
+    width: 100%;
+}
+
+.refresco-auto {
+    font-size: 0.9rem;
+}
+
+#contador {
+    font-weight: bold;
+    font-size: 0.85rem;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.75; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.bloque-superior {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1.2rem 1.5rem;
+    background: #34495e;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    color: white;
+}
+
+.equipo-nombre {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: #f9d923;
+}
+
+.cambiar-btn {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-color: #aaa;
+    color: #ccc;
+}
+
+.cambiar-btn:hover {
+    background-color: #ccc;
+    color: black;
+}
+
+.contador-badge {
+    background-color: #ffffff;
+    color: #333;
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.refresco-auto {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: white;
 }
 
 
     </style>
-</head>
-<body>
+{% endblock %}
 
 
-    <div class="alert alert-info text-center mt-4 mx-3">
-        <strong>¡Estás viendo una demo en vivo!</strong><br>
-        Se ve la clasificación del grupo del equipo seleccionado, se actualiza automáticamente con los datos reales del torneo.
-    </div>
-    <div class="selector-grupos">
-        {% for g in grupos %}
-            <a href="{{ path('clasificacion_grupo', {
-                equipoId: 0,
-                slug: torneo.slug,
-                grupoId: g.id
-            }) }}"
-            class="{{ g.id == grupo.id ? 'selected' : '' }}">
-                {{ g.nombre }}
-            </a>
-        {% endfor %}
-    </div>
 
-    <div class="selector-grupos">
-            <a href="{{ path('torneo_cuadro_final', {
-                slug: torneo.slug
-            }) }}">
-                CUADRO FINAL
-            </a>
-    </div>
+{% block body %}
 
-    <h2>Clasificación - {{ grupo.nombre }}</h2>
-    {% if equipoSeleccionado %}
-        <h2>Equipo seleccionado - {{ equipoSeleccionado.nombre }}</h2>
-    {% else %}
-        <h2>Ningún equipo seleccionado</h2>
-    {% endif %}
+
+
+    <h2 class="text-center mb-4">Clasificación - {{ grupo.nombre }}</h2>
 
 
     <table>
@@ -157,35 +213,23 @@
         {% endfor %}
         </tbody>
     </table>
-
+</br>
 <h2>Partidos del grupo</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Fecha</th>
-            <th>Local</th>
-            <th>Resultado</th>
-            <th>Visitante</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for partido in partidos %}
 
-            {% if equipoSeleccionado %}
-                <tr class="{{ (partido.local.nombre == equipoSeleccionado.nombre or partido.visitante.nombre == equipoSeleccionado.nombre) ? 'destacado' : '' }}">
-
-            {% else %}
-                <tr class="''">
-
-            {% endif %}        
-            
-                <td>{{ partido.fecha ? partido.fecha|date('d/m H:i') : 'Sin fecha' }}</td>
-
-                <td>{{ partido.local.nombre }}</td>
-                <td>
+<div class="partidos-lista">
+    {% for partido in partidos %}
+   
+            <div class="partido-card">
+   
+            <div class="partido-fecha">
+                {{ partido.fecha ? partido.fecha|date('d/m H:i') : 'Sin fecha' }}
+            </div>
+            <div class="partido-equipos">
+                <span class="local">{{ partido.local.nombre }}</span>
+                <span class="resultado">
                     {% if partido.golesLocal is not null and partido.golesVisitante is not null %}
                         {% if partido.estado == 'En Juego' %}
-                            {{ partido.golesLocal }} - {{ partido.golesVisitante }} <em>({{partido.minutoEnJuego }}')</em>
+                            {{ partido.golesLocal }} - {{ partido.golesVisitante }} <em>({{ partido.minutoEnJuego }}')</em>
                         {% elseif partido.estado == 'Finalizado' %}
                             {{ partido.golesLocal }} - {{ partido.golesVisitante }} <em>(Final)</em>
                         {% else %}
@@ -194,13 +238,31 @@
                     {% else %}
                         <em>Sin iniciar</em>
                     {% endif %}
-                </td>
-                <td>{{ partido.visitante.nombre }}</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>    
+                </span>
+                <span class="visitante">{{ partido.visitante.nombre }}</span>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 
-</body>
-</html>
+{% endblock %}
+{% block javascripts %}
+        <script>
+            setTimeout(() => {
+                window.location.reload();
+            }, 30000); // cada 30 segundos
 
+    let tiempo = 30;
+    const contador = document.getElementById('contador');
+
+    const intervalo = setInterval(() => {
+        tiempo--;
+        contador.textContent = tiempo;
+        if (tiempo <= 0) {
+            clearInterval(intervalo);
+            window.location.reload();
+        }
+    }, 1000);    
+        </script>  
+      
+{% endblock %}

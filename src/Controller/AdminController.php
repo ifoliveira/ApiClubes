@@ -125,7 +125,12 @@ class AdminController extends AbstractController
                "🔐 Modo: $modo\n".
                "📧 ".($request->query->get('e') ?? 'Sin email')."\n".
                "🌐 IP: ".$request->getClientIp();     
-    $notifier->sendMessage($mensaje);
+               if ($request->getClientIP() === '127.0.0.1') {
+                    $mensaje .= "\n⚠️ **Modo Local**: No se enviará notificación Telegram.";
+                    } else {
+                    $notifier->sendMessage($mensaje);
+                    $mensaje .= "\n✅ Notificación enviada a Telegram.";
+                    }
         $torneo = $torneosRepository->findOneBy(['slug' => $slug]);
 
 
@@ -296,7 +301,6 @@ class AdminController extends AbstractController
 
                 case 'reiniciar':
                     $partido->setEstado(null);
-                    $partido->setFecha(null);
                     $partido->setGolesLocal(null);
                     $partido->setGolesVisitante(null);
                     $partido->setFechaInicio(null);

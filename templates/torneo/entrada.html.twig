@@ -1,19 +1,10 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Elige tu equipo</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
+{% set demoModalType = 'demomodal' %}
+
+{% extends 'basetorneo.html.twig' %}
+
+
+ {% block stylesheets %}   <style>
         * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(to right, #141e30, #243b55);
-            color: white;
-            padding: 2rem 1rem;
-            text-align: center;
-        }
 
         h1 {
             margin-bottom: 2rem;
@@ -75,19 +66,43 @@
             .equipo { font-size: 1rem; padding: 0.8rem; }
         }
     </style>
-</head>
-<body>
-    
+{% endblock %}
 
-    <div class="alert alert-info text-center mt-4 mx-3">
-        <strong>¡Estás viendo una demo en vivo!</strong><br>
-        Selecciona un equipo para seguir el torneo desde su punto de vista: verás los partidos jugados, la clasificación de grupos y cómo se forman los cruces finales automáticamente.
-    </div>
-    <div class="alert alert-info text-center mt-4 mx-3">
-        <a href="{{ asset('pdfs/' ~ torneo.slug ~ '.pdf') }}" download class="btn btn-success btn-lg">
-            📥 Descargar Cuadro del Torneo
+{% block javascripts %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                if (!sessionStorage.getItem("demoModalShown")) {
+                    const modal = new bootstrap.Modal(document.getElementById('demoInfoModal'));
+                    modal.show();
+                    sessionStorage.setItem("demoModalShown", "1");
+                }
+            });
+        </script>
+    
+{% endblock %}
+
+{% block barra_superior %}
+    <div class="barra-superior">
+        <a href="{{ path('portada_torneo', { slug: torneo.slug }) }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver a la portada
         </a>
-    </div>  
+    </div>
+    </br>
+{% endblock %}
+
+
+{% block body %}
+        {% if torneo.demo  %}
+            <div class="demo-label">DEMO</div>
+        {% endif %} 
+        {% if torneo.demo %}
+        <button class="btn btn-sm btn-outline-info position-fixed"
+                style="top: 15px; right: 15px; z-index: 1050;"
+                onclick="mostrarDemoInfo()"
+                title="Ver explicación del grupo">
+            ❓ Ayuda demo
+        </button>
+        {% endif %}        
 
     <h1>{{torneo.nombre}}</h1>
     <h2>Selecciona tu equipo</h2>
@@ -103,8 +118,8 @@
             </div>
         {% endfor %}
     </div>
+{% endblock %}
 
 
 
-</body>
-</html>
+

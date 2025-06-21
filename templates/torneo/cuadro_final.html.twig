@@ -1,17 +1,9 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Cuadro Final del Torneo</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% set demoModalType = 'demofinal' %}
+
+{% extends 'basetorneo.html.twig' %}
+
+{% block stylesheets %}
     <style>
-        body {
-            background: #1e1e2f;
-            color: #fff;
-            font-family: 'Segoe UI', sans-serif;
-            padding: 2rem 1rem;
-            text-align: center;
-        }
 
         h2 {
             margin-bottom: 1.5rem;
@@ -93,11 +85,85 @@
 
         .partido.pendiente {
             background: #2e3a59; /* azul gris por defecto */
-        }        
-    </style>
-</head>
-<body>
+        }  
 
+.refresco-auto {
+    font-size: 0.9rem;
+}
+
+#contador {
+    font-weight: bold;
+    font-size: 0.85rem;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.75; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.bloque-superior {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1.2rem 1.5rem;
+    background: #34495e;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    color: white;
+}
+
+.equipo-nombre {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: #f9d923;
+}
+
+.cambiar-btn {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-color: #aaa;
+    color: #ccc;
+}
+
+.cambiar-btn:hover {
+    background-color: #ccc;
+    color: black;
+}
+
+.contador-badge {
+    background-color: #ffffff;
+    color: #333;
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.refresco-auto {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: white;
+}
+
+    </style>
+{% endblock %}
+
+{% block title %}Cuadro Final del Torneo{% endblock %}
+
+     
+{% block body %}
+        {% if torneo.demo  %}
+            <div class="demo-label">DEMO</div>
+        {% endif %} 
+        {% if torneo.demo %}
+        <button class="btn btn-sm btn-outline-info position-fixed"
+                style="top: 15px; right: 15px; z-index: 1050;"
+                onclick="mostrarDemoFinalModal()"
+                title="Ver explicación del grupo">
+            ❓ Ayuda demo
+        </button>
+        {% endif %}   
+        
 <h2 class="text-center">Cuadro Final del Torneo</h2>
 
 {% for nombreFase, partidos in fases %}
@@ -158,6 +224,24 @@
         {% endfor %}
     </div>
 {% endfor %}
+{% endblock %}
+{% block javascripts %}
+        <script>
+            setTimeout(() => {
+                window.location.reload();
+            }, 30000); // cada 30 segundos
 
-</body>
-</html>
+    let tiempo = 30;
+    const contador = document.getElementById('contador');
+
+    const intervalo = setInterval(() => {
+        tiempo--;
+        contador.textContent = tiempo;
+        if (tiempo <= 0) {
+            clearInterval(intervalo);
+            window.location.reload();
+        }
+    }, 1000);    
+        </script>  
+      
+{% endblock %}

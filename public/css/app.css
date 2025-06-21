@@ -1,0 +1,131 @@
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #141e30, #243b55);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+h1, .modal-title {
+    font-weight: 600;
+}
+
+footer {
+    color: #888;
+}
+
+.modal-content {
+    border-radius: 1rem;
+}
+
+ul {
+    padding-left: 1.2rem;
+}
+
+/* Contenido del modal: fondo blanco, esquinas redondeadas, sombra */
+.modal-content {
+    border-radius: 1rem;
+    background-color: #ffffff;
+    color: #212529;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Cabecera con degradado moderno */
+.modal-header {
+    background: linear-gradient(135deg, #007bff, #00bfff);
+    color: white;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+}
+
+/* Botón cerrar en blanco */
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+/* Cuerpo del modal */
+.modal-body {
+    font-size: 16px;
+    color: #333;
+}
+
+/* Lista con iconos y buena visibilidad */
+.modal-body ul {
+    padding-left: 1.5rem;
+    list-style: none;
+    margin-bottom: 1rem;
+}
+
+.modal-body ul li {
+    margin-bottom: 0.5rem;
+    position: relative;
+    padding-left: 1.2rem;
+}
+
+.modal-body ul li::before {
+    content: "⚽";
+    position: absolute;
+    left: 0;
+    color: #007bff;
+}
+
+/* Botón bonito de cierre */
+.modal-footer .btn-primary {
+    background-color: #007bff;
+    color: white;
+    border-radius: 50px;
+    padding: 8px 22px;
+    font-weight: 600;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.modal-footer .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.demo-label {
+    position: absolute;
+    top: 10px;
+    left: -30px;
+    background: #ffcc00;
+    color: #000;
+    padding: 5px 40px;
+    transform: rotate(-45deg);
+    font-weight: bold;
+    font-size: 14px;
+    z-index: 1000;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}  
+
+.selector-grupos {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.selector-grupos a {
+    background-color: #2e3d4f;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.selector-grupos a:hover {
+    background-color: #4CAF50;
+    color: #000;
+}
+
+.selector-grupos a.selected {
+    background-color: #f9d923;
+    color: #000;
+    border: 2px solid #fff;
+}

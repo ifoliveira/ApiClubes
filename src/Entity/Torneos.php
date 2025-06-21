@@ -44,6 +44,9 @@ class Torneos
     #[ORM\OneToMany(mappedBy: 'torneo', targetEntity: PartidoFinal::class)]
     private Collection $partidoFinals;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $demo = null;
+
     public function __construct()
     {
         $this->equipoTorneos = new ArrayCollection();
@@ -233,6 +236,18 @@ class Torneos
                 $partidoFinal->setTorneo(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isDemo(): ?bool
+    {
+        return $this->demo;
+    }
+
+    public function setDemo(?bool $demo): static
+    {
+        $this->demo = $demo;
 
         return $this;
     }

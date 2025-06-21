@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mi Torneo{% endblock %}</title>
+
+    {# Bootstrap 5 CSS #}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+    {# Estilos personalizados opcionales #}
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+    {% block stylesheets %}{% endblock %}
+</head>
+<body class="bg-light">
+
+    <header class="container my-3">
+        {% block header %}
+            <h1 class="text-center">🏆 Mi Torneo</h1>
+        {% endblock %}
+    </header>
+
+    <main class="container">
+    {% block barra_superior %}
+        {% if torneo.demo %}
+            <div class="demo-label">DEMO</div>
+            <button class="btn btn-sm btn-outline-info position-fixed"
+                    style="top: 15px; right: 15px; z-index: 1050;"
+                    onclick="mostrarDemoGrupoModal()"
+                    title="Ver explicación del grupo">
+                ❓ Ayuda demo
+            </button>
+        {% endif %}
+
+        <div class="selector-grupos">
+            {% for g in grupos %}
+                <a href="{{ path('clasificacion_grupo', {
+                    equipoId: equipoSeleccionado.id ?? null,
+                    slug: torneo.slug,
+                    grupoId: g.id
+                }) }}"
+                {% if grupo %}
+                    class="{{ g.id == grupo.id ? 'selected' : '' }}"
+                {% else %}
+                    class=""
+                {% endif %} >               
+
+                    {{ g.nombre }}
+                </a>
+            {% endfor %}
+        </div>
+
+        <div class="selector-grupos">
+            <a href="{{ path('torneo_cuadro_final', { slug: torneo.slug ,  equipoId: equipoSeleccionado.id ?? null}) }}">
+                CUADRO FINAL
+            </a>
+        </div>
+
+        <div class="bloque-superior mb-4">
+            <div class="text-center mb-2">
+                {% if equipoSeleccionado %}
+                    <div class="equipo-seleccionado mb-2">
+                        <span class="equipo-nombre">{{ equipoSeleccionado.nombre }}</span>
+                    </div>
+                    {% if torneo.demo %}
+                        <a href="{{ path('torneo_entrada', { slug: torneo.slug }) }}"
+                        class="btn btn-outline-secondary btn-xs cambiar-btn">
+                            Cambiar equipo
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <div class="text-danger fw-bold">Ningún equipo seleccionado</div>
+                {% endif %}
+            </div>
+
+            <div class="text-center small refresco-auto">
+                ⏳ Auto-actualización en <span id="contador" class="contador-badge">30</span> segundos
+            </div>
+        </div>
+    {% endblock %}
+
+        {# Aquí se renderiza el contenido principal de cada página #}
+
+        {% block body %}{% endblock %}
+    </main>
+
+    <footer class="text-center text-muted py-4 small">
+        {% block footer %}
+            © {{ "now"|date("Y") }} TorneosApp. Todos los derechos reservados.
+        {% endblock %}
+    </footer>
+
+    {# Bootstrap 5 JS Bundle (incluye Popper.js) #}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+
+        
+    {# Scripts globales o comunes #}
+    <script src="{{ asset('js/app.js') }}"></script>
+
+
+    {% if torneo.demo and demoModalType is defined %}
+        {% include 'includes/' ~ demoModalType ~ '.html.twig' %}
+    {% endif %}
+
+    {% block javascripts %}{% endblock %}
+</body>
+</html>
