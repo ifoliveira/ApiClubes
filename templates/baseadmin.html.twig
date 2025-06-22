@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Panel Admin Torneo{% endblock %}</title>
+    {# Bootstrap 5 CSS #}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+    {# Estilos personalizados opcionales #}
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <style>
+    </style>
+    {# Estilos personalizados opcionales #}
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">    
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+
+<div class="app-container">
+
+    <header>
+        {% block header_title %}⚽ Administración – {{ torneo.nombre }}{% endblock %}
+    </header>
+
+    {% if torneo.demo %}
+        <div class="demo-label">DEMO</div>
+        <button class="demo-help-btn"
+                onclick="mostrarDemoAdmin()"
+                title="Ver explicación del grupo">
+            ❓ Ayuda demo
+        </button>
+    {% endif %}
+
+    <div class="actions">
+        <a href="{{ path('seguimiento_vivo_grupos', { slug: torneo.slug }) }}" class="btn-action">
+            <span class="btn-icon">🟦</span>
+            <span>Fase de Grupos</span>
+        </a>
+
+        <a href="{{ path('seguimiento_vivo_final', { slug: torneo.slug }) }}" class="btn-action">
+            <span class="btn-icon">🏆</span>
+            <span>Fase Final</span>
+        </a>
+
+        <a href="{{ path('admin_resolver_empates_global', { slug: torneo.slug }) }}" class="btn-action">
+            <span class="btn-icon">⚖️</span>
+            <span>Resolver Empates</span>
+        </a>
+
+        {# Puedes añadir más botones fácilmente aquí #}
+    </div>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        &copy; {{ "now"|date("Y") }} TorneosApp · Panel Admin
+    </footer>
+
+</div>
+
+{% block javascripts %}{% endblock %}
+    {# Bootstrap 5 JS Bundle (incluye Popper.js) #}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+
+    {# Scripts globales o comunes #}
+    <script src="{{ asset('js/app.js') }}"></script>
+
+
+    {% if torneo.demo and demoModalType is defined %}
+        {% include 'includes/' ~ demoModalType ~ '.html.twig' %}
+    {% endif %}
+</body>
+</html>

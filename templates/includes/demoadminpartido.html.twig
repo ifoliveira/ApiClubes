@@ -1,0 +1,55 @@
+
+<div class="modal fade" id="demoAdminPartidoModal" tabindex="-1" aria-labelledby="demoAdminPartidoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="demoFinalLabel">🏆 Evolución del Cuadro Final</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+       <div class="modal-body">
+            <div class="custom-modal-header">
+            <h2>🕹️ Control del Partido</h2>
+            </div>
+
+            <div class="custom-modal-body">
+            <p>En esta pantalla puedes controlar el estado de cada partido del torneo:</p>
+
+            <ul>
+                <li><strong>Iniciar</strong>: pone el partido en juego y comienza a contar el minuto.</li>
+                <li><strong>+1 Gol</strong> / <strong>-1 Gol</strong>: suma o resta goles al equipo correspondiente.</li>
+                <li><strong>Finalizar</strong>: termina el partido y guarda el resultado.</li>
+                <li><strong>♻️ Reiniciar</strong>: vuelve a dejar el partido como "no iniciado" y borra el resultado y los goles.</li>
+            </ul>
+
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: #94a3b8;">
+                Esta funcionalidad solo está disponible para la organización del torneo.
+            </p>
+            </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (!sessionStorage.getItem("demoAdminPartidoModalShown")) {
+        const modalElement = document.getElementById('demoAdminPartidoModal');
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+            sessionStorage.setItem("demoAdminPartidoModalShown", "1");
+        }
+    }
+});
+
+function mostrarDemoAdminPartidoModal() {
+    const modalElement = document.getElementById('demoAdminPartidoModal');
+    if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    }
+}
+</script>

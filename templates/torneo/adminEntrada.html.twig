@@ -1,77 +1,76 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Seguimiento – {{ torneo.nombre }}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% set demoModalType = 'demoadmin' %}
+
+{% extends 'baseadmin.html.twig' %}
+{% block stylesheets %}
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #1e2a38;
-            color: white;
-            text-align: center;
-            padding: 3rem 1rem;
-        }
+.custom-modal.hidden {
+    display: none;
+}
 
-        h1 {
-            margin-bottom: 2rem;
-        }
+.custom-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
 
-        .opciones {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-        }
+.custom-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+}
 
-        @media (min-width: 600px) {
-            .opciones {
-                flex-direction: row;
-                justify-content: center;
-            }
-        }
+.custom-modal-content {
+    position: relative;
+    background: #1e293b;
+    color: white;
+    width: 90%;
+    max-width: 420px;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+}
 
-        .btn {
-            padding: 1rem 2.5rem;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: white;
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
+.custom-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
 
-        .btn:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
-        }
+.custom-modal-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+}
 
-        .btn:active {
-            transform: scale(0.97);
-        }
+.custom-modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.custom-modal-body ul {
+    padding-left: 1.2rem;
+    margin: 0.8rem 0;
+}
+
+.custom-modal-body li {
+    margin-bottom: 0.5rem;
+}
+
+
+
     </style>
-</head>
-<body>
+{% endblock %}
+{% block title %}Inicio Administración{% endblock %}
 
-    <h1>Seguimiento en Vivo – {{ torneo.nombre }}</h1>
-
-    <div class="opciones">
-        <a href="{{ path('seguimiento_vivo_grupos', { slug: torneo.slug }) }}" class="btn">
-            🟦 Fase de Grupos
-        </a>
-
-        <a href="{{ path('seguimiento_vivo_final', { slug: torneo.slug }) }}" class="btn">
-            🏆 Fase Final
-        </a>
-
-        <a class="btn" href="{{ path('admin_resolver_empates_global', { slug: torneo.slug }) }}">
-            ⚖️ Resolver Empates
-        </a>        
-    </div>
-
-</body>
-</html>
+{% block content %}
+    <h2>¡Bienvenido al panel de control!</h2>
+    <p>Selecciona una opción en los botones de arriba para gestionar el torneo.</p>
+{% endblock %}

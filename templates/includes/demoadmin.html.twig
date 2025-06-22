@@ -1,0 +1,50 @@
+<div class="modal fade" id="demoAdminModal" tabindex="-1" aria-labelledby="demoGrupoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="demoGrupoLabel">👀 Estas viendo la pantalla de administración del torneo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+          <div class="modal-body">
+      <p>Esta pantalla es exclusiva para <strong>la organización del torneo</strong>.</p>
+      <ul>
+        <li>⚽ Marca el inicio o fin de los partidos</li>
+        <li>🥅 Añade goles manualmente</li>
+        <li>🔁 Resuelve empates en caso de ser necesario</li>
+      </ul>
+
+      <p style="margin-top: 1.5rem; color: #facc15;">
+        ⚠️ Estás en una <strong>demo pública</strong>. Los datos se pueden modificar desde aquí para que otras personas vean el torneo en vivo.
+      </p>
+
+      <p style="font-size: 0.85rem; color: #94a3b8; text-align: center; margin-top: 1rem;">
+        Puedes volver a ver esta ayuda pulsando <strong>❓ Ayuda demo</strong>.
+      </p>
+    </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (!sessionStorage.getItem("demoAdminModalShown")) {
+        const modalElement = document.getElementById('demoAdminModal');
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+            sessionStorage.setItem("demoAdminModalShown", "1");
+        }
+    }
+});
+
+function mostrarDemoAdmin() {
+    const modalElement = document.getElementById('demoAdminModal');
+    if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    }
+}
+</script>
